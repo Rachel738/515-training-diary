@@ -183,18 +183,32 @@
 
       <div class="w-full">
         <!-- Weekday Labels -->
-        <div class="grid grid-cols-7 gap-2 md:gap-3 mb-2 text-center text-xs md:text-sm font-extrabold">
-          <div class="text-rose-400 py-2 bg-rose-950/20 border border-rose-900/30 rounded-lg">週日 (SUN)</div>
-          <div class="text-slate-200 py-2 bg-slate-900/40 border border-slate-800 rounded-lg">週一 (MON)</div>
-          <div class="text-slate-200 py-2 bg-slate-900/40 border border-slate-800 rounded-lg">週二 (TUE)</div>
-          <div class="text-slate-200 py-2 bg-slate-900/40 border border-slate-800 rounded-lg">週三 (WED)</div>
-          <div class="text-slate-200 py-2 bg-slate-900/40 border border-slate-800 rounded-lg">週四 (THU)</div>
-          <div class="text-slate-200 py-2 bg-slate-900/40 border border-slate-800 rounded-lg">週五 (FRI)</div>
-          <div class="text-slate-200 py-2 bg-slate-900/40 border border-slate-800 rounded-lg">週六 (SAT)</div>
+        <div class="grid grid-cols-7 gap-1 md:gap-3 mb-2 text-center text-xs md:text-sm font-extrabold">
+          <div class="text-rose-400 py-1.5 md:py-2 bg-rose-950/20 border border-rose-900/30 rounded-lg">
+            <span class="inline md:hidden">日</span><span class="hidden md:inline">週日 (SUN)</span>
+          </div>
+          <div class="text-slate-200 py-1.5 md:py-2 bg-slate-900/40 border border-slate-800 rounded-lg">
+            <span class="inline md:hidden">一</span><span class="hidden md:inline">週一 (MON)</span>
+          </div>
+          <div class="text-slate-200 py-1.5 md:py-2 bg-slate-900/40 border border-slate-800 rounded-lg">
+            <span class="inline md:hidden">二</span><span class="hidden md:inline">週二 (TUE)</span>
+          </div>
+          <div class="text-slate-200 py-1.5 md:py-2 bg-slate-900/40 border border-slate-800 rounded-lg">
+            <span class="inline md:hidden">三</span><span class="hidden md:inline">週三 (WED)</span>
+          </div>
+          <div class="text-slate-200 py-1.5 md:py-2 bg-slate-900/40 border border-slate-800 rounded-lg">
+            <span class="inline md:hidden">四</span><span class="hidden md:inline">週四 (THU)</span>
+          </div>
+          <div class="text-slate-200 py-1.5 md:py-2 bg-slate-900/40 border border-slate-800 rounded-lg">
+            <span class="inline md:hidden">五</span><span class="hidden md:inline">週五 (FRI)</span>
+          </div>
+          <div class="text-slate-200 py-1.5 md:py-2 bg-slate-900/40 border border-slate-800 rounded-lg">
+            <span class="inline md:hidden">六</span><span class="hidden md:inline">週六 (SAT)</span>
+          </div>
         </div>
 
         <!-- Dynamic Month Days Grid -->
-        <div id="calendarGrid" class="grid grid-cols-7 gap-2 md:gap-3">
+        <div id="calendarGrid" class="grid grid-cols-7 gap-1 md:gap-3">
           <!-- Calendar Days generated dynamically -->
         </div>
       </div>
@@ -695,8 +709,8 @@
       for (let i = firstDayIdx - 1; i >= 0; i--) {
         const dNum = prevMonthDays - i;
         const cell = document.createElement('div');
-        cell.className = 'min-h-[120px] md:min-h-[140px] bg-[#0c121e]/40 border border-slate-800/60 rounded-xl p-2.5 opacity-60 flex flex-col justify-between pointer-events-none';
-        cell.innerHTML = `<span class="text-sm font-extrabold text-slate-500">${dNum}</span>`;
+        cell.className = 'min-h-[80px] sm:min-h-[100px] md:min-h-[140px] bg-[#0c121e]/40 border border-slate-800/60 rounded-lg md:rounded-xl p-1 md:p-2.5 opacity-60 flex flex-col justify-between pointer-events-none';
+        cell.innerHTML = `<span class="text-xs md:text-sm font-extrabold text-slate-500">${dNum}</span>`;
         calendarGrid.appendChild(cell);
       }
 
@@ -708,46 +722,46 @@
         const log = logsData[dateStr];
 
         const card = document.createElement('div');
-        let cardStyle = "min-h-[120px] md:min-h-[140px] bg-[#0f172a] hover:bg-[#1e293b] border border-slate-800 hover:border-sky-500/70 rounded-xl p-2.5 md:p-3 cursor-pointer transition-all flex flex-col justify-between group shadow-md";
+        let cardStyle = "min-h-[80px] sm:min-h-[100px] md:min-h-[140px] bg-[#0f172a] hover:bg-[#1e293b] border border-slate-800 hover:border-sky-500/70 rounded-lg md:rounded-xl p-1 sm:p-1.5 md:p-3 cursor-pointer transition-all flex flex-col justify-between group shadow-md overflow-hidden";
         
         if (isToday) {
-          cardStyle = "min-h-[120px] md:min-h-[140px] bg-[#0f172a] border-2 border-sky-400 rounded-xl p-2.5 md:p-3 cursor-pointer transition-all flex flex-col justify-between group shadow-lg shadow-sky-500/10";
+          cardStyle = "min-h-[80px] sm:min-h-[100px] md:min-h-[140px] bg-[#0f172a] border-2 border-sky-400 rounded-lg md:rounded-xl p-1 sm:p-1.5 md:p-3 cursor-pointer transition-all flex flex-col justify-between group shadow-lg shadow-sky-500/10 overflow-hidden";
         }
 
         let topHeaderHtml = `<div class="flex items-center justify-between">`;
-        topHeaderHtml += `<span class="text-base md:text-lg font-black text-white group-hover:text-sky-300 transition-colors">${day}</span>`;
+        topHeaderHtml += `<span class="text-xs sm:text-sm md:text-lg font-black text-white group-hover:text-sky-300 transition-colors">${day}</span>`;
         if (isToday) {
-          topHeaderHtml += `<span class="text-[10px] font-black bg-sky-500 text-white px-2 py-0.5 rounded-md">今天</span>`;
+          topHeaderHtml += `<span class="text-[9px] md:text-[10px] font-black bg-sky-500 text-white px-1 md:px-2 py-0.5 rounded">今天</span>`;
         }
         topHeaderHtml += `</div>`;
 
-        let bodyHtml = `<div class="flex flex-col gap-1.5 my-2">`;
+        let bodyHtml = `<div class="flex flex-col gap-0.5 sm:gap-1 my-0.5 sm:my-1.5 overflow-hidden">`;
         if (log) {
           if (log.weight) {
-            bodyHtml += `<div class="inline-flex items-center gap-1 text-xs font-black px-2 py-0.5 rounded-md badge-weight w-fit"><i class="fa-solid fa-weight-scale text-[10px]"></i> ${log.weight}kg</div>`;
+            bodyHtml += `<div class="inline-flex items-center gap-0.5 md:gap-1 text-[10px] md:text-xs font-black px-1 md:px-2 py-0.5 rounded badge-weight w-fit max-w-full truncate"><i class="fa-solid fa-weight-scale text-[9px] hidden sm:inline"></i> ${log.weight}k</div>`;
           }
 
           if (log.sports && log.sports.length > 0) {
             log.sports.forEach(s => {
               if (s === 'swim') {
-                bodyHtml += `<div class="inline-flex items-center gap-1 text-xs font-black px-2 py-0.5 rounded-md badge-swim w-fit"><i class="fa-solid fa-person-swimming text-[10px]"></i> ${log.swimDist || '1.2k'}m</div>`;
+                bodyHtml += `<div class="inline-flex items-center gap-0.5 md:gap-1 text-[10px] md:text-xs font-black px-1 md:px-2 py-0.5 rounded badge-swim w-fit max-w-full truncate"><i class="fa-solid fa-person-swimming text-[9px] hidden sm:inline"></i> ${log.swimDist || '1.2k'}m</div>`;
               } else if (s === 'bike') {
-                bodyHtml += `<div class="inline-flex items-center gap-1 text-xs font-black px-2 py-0.5 rounded-md badge-bike w-fit"><i class="fa-solid fa-person-biking text-[10px]"></i> ${log.bikeDist || '40'}k</div>`;
+                bodyHtml += `<div class="inline-flex items-center gap-0.5 md:gap-1 text-[10px] md:text-xs font-black px-1 md:px-2 py-0.5 rounded badge-bike w-fit max-w-full truncate"><i class="fa-solid fa-person-biking text-[9px] hidden sm:inline"></i> ${log.bikeDist || '40'}k</div>`;
               } else if (s === 'run') {
-                bodyHtml += `<div class="inline-flex items-center gap-1 text-xs font-black px-2 py-0.5 rounded-md badge-run w-fit"><i class="fa-solid fa-person-running text-[10px]"></i> ${log.runDist || '5'}k</div>`;
+                bodyHtml += `<div class="inline-flex items-center gap-0.5 md:gap-1 text-[10px] md:text-xs font-black px-1 md:px-2 py-0.5 rounded badge-run w-fit max-w-full truncate"><i class="fa-solid fa-person-running text-[9px] hidden sm:inline"></i> ${log.runDist || '5'}k</div>`;
               } else if (s === 'core') {
-                bodyHtml += `<div class="inline-flex items-center gap-1 text-xs font-black px-2 py-0.5 rounded-md badge-core w-fit"><i class="fa-solid fa-dumbbell text-[10px]"></i> 核心</div>`;
+                bodyHtml += `<div class="inline-flex items-center gap-0.5 md:gap-1 text-[10px] md:text-xs font-black px-1 md:px-2 py-0.5 rounded badge-core w-fit max-w-full truncate"><i class="fa-solid fa-dumbbell text-[9px] hidden sm:inline"></i> 核心</div>`;
               } else if (s === 'rest') {
-                bodyHtml += `<div class="inline-flex items-center gap-1 text-xs font-black px-2 py-0.5 rounded-md badge-rest w-fit"><i class="fa-solid fa-bed text-[10px]"></i> 休息</div>`;
+                bodyHtml += `<div class="inline-flex items-center gap-0.5 md:gap-1 text-[10px] md:text-xs font-black px-1 md:px-2 py-0.5 rounded badge-rest w-fit max-w-full truncate"><i class="fa-solid fa-bed text-[9px] hidden sm:inline"></i> 休息</div>`;
               }
             });
           }
         }
         bodyHtml += `</div>`;
 
-        let bottomHtml = `<div>`;
+        let bottomHtml = `<div class="overflow-hidden">`;
         if (log && log.rpe) {
-          bottomHtml += `<span class="text-xs font-extrabold text-purple-200 bg-purple-950/80 border border-purple-500/40 px-2 py-0.5 rounded-md inline-block">RPE ${log.rpe}</span>`;
+          bottomHtml += `<span class="text-[9px] md:text-xs font-extrabold text-purple-200 bg-purple-950/80 border border-purple-500/40 px-1 md:px-2 py-0.5 rounded inline-block truncate max-w-full">RPE ${log.rpe}</span>`;
         }
         bottomHtml += `</div>`;
 
@@ -763,8 +777,8 @@
       const nextDaysCount = (7 - (totalCells % 7)) % 7;
       for (let i = 1; i <= nextDaysCount; i++) {
         const cell = document.createElement('div');
-        cell.className = 'min-h-[120px] md:min-h-[140px] bg-[#0c121e]/40 border border-slate-800/60 rounded-xl p-2.5 opacity-60 flex flex-col justify-between pointer-events-none';
-        cell.innerHTML = `<span class="text-sm font-extrabold text-slate-500">${i}</span>`;
+        cell.className = 'min-h-[80px] sm:min-h-[100px] md:min-h-[140px] bg-[#0c121e]/40 border border-slate-800/60 rounded-lg md:rounded-xl p-1 md:p-2.5 opacity-60 flex flex-col justify-between pointer-events-none';
+        cell.innerHTML = `<span class="text-xs md:text-sm font-extrabold text-slate-500">${i}</span>`;
         calendarGrid.appendChild(cell);
       }
     }
