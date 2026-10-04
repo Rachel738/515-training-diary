@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="zh-TW" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>515 鐵人三項科學化訓練日誌 | 徐國峰邏輯</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+TC:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              bg: '#090d16',
+              card: '#111827',
+              cardHover: '#1f2937',
+              border: '#1e293b',
+              borderBright: '#334155',
+              swim: '#0284c7',
+              swimText: '#7dd3fc',
+              bike: '#16a34a',
+              bikeText: '#86efac',
+              run: '#ea580c',
+              runText: '#fdba74',
+              core: '#9333ea',
+              coreText: '#e9d5ff',
+              rest: '#475569',
+              restText: '#f1f5f9',
+              weight: '#6366f1',
+              weightText: '#c7d2fe',
+            }
+          },
+          fontFamily: {
+            sans: ['Noto Sans TC', 'Inter', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #090d16;
+      color: #f8fafc;
+      font-family: 'Noto Sans TC', 'Inter', sans-serif;
+    }
+    
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #090d16;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1e293b;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #334155;
+    }
+
+    .badge-swim {
+      background: rgba(14, 165, 233, 0.25);
+      border: 1px solid rgba(56, 189, 248, 0.6);
+      color: #7dd3fc;
+    }
+    .badge-bike {
+      background: rgba(34, 197, 94, 0.25);
+      border: 1px solid rgba(74, 222, 128, 0.6);
+      color: #86efac;
+    }
+    .badge-run {
+      background: rgba(249, 115, 22, 0.25);
+      border: 1px solid rgba(251, 146, 60, 0.6);
+      color: #fdba74;
+    }
+    .badge-core {
+      background: rgba(168, 85, 247, 0.25);
+      border: 1px solid rgba(192, 132, 252, 0.6);
+      color: #e9d5ff;
+    }
+    .badge-rest {
+      background: rgba(100, 116, 139, 0.25);
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      color: #f1f5f9;
+    }
+    .badge-weight {
+      background: rgba(99, 102, 241, 0.25);
+      border: 1px solid rgba(129, 140, 248, 0.6);
+      color: #c7d2fe;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-sky-500 selection:text-white">
+
+  <div class="w-full">
+    <header class="border-b border-slate-800 bg-[#090d16]/95 sticky top-0 z-40 backdrop-blur-md px-4 lg:px-8 py-3.5">
+      <div class="max-w-[1400px] mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
+        
+        <!-- Header Title & Race Target -->
+        <div>
+          <div class="flex items-center gap-3">
+            <h1 class="text-xl md:text-2xl font-black tracking-tight text-white flex items-center gap-2">
+              <i class="fa-solid fa-person-triathlon text-sky-400"></i>
+              515 鐵人三項科學化訓練日誌
+            </h1>
+            <span class="px-2.5 py-0.5 text-xs font-bold rounded-full bg-sky-500/20 text-sky-300 border border-sky-400/40">
+              徐國峰邏輯
+            </span>
+          </div>
+          <div class="flex items-center gap-2 mt-1 text-sm font-semibold text-slate-200">
+            <i class="fa-solid fa-clock text-amber-400"></i>
+            <span>距離 2026/12/06 賽事：<strong id="countdownText" class="text-amber-400 text-base font-extrabold">63 天</strong></span>
+            <span class="text-slate-500">•</span>
+            <span class="text-slate-300 font-medium">目標：輕鬆順暢完賽</span>
+          </div>
+        </div>
+
+        <!-- Top Action Buttons -->
+        <div class="flex items-center gap-3">
+          <button id="addTodayLogBtn" class="px-4 py-2 bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white font-extrabold text-sm rounded-xl shadow-lg shadow-sky-500/20 hover:shadow-sky-500/40 transition-all flex items-center gap-2 active:scale-95">
+            <i class="fa-solid fa-plus text-xs"></i>
+            <span>新增今日日誌</span>
+          </button>
+          <button id="exportImportModalBtn" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold text-sm rounded-xl transition-all flex items-center gap-2 active:scale-95">
+            <i class="fa-solid fa-folder-open text-slate-400"></i>
+            <span>匯入/備份</span>
+          </button>
+        </div>
+
+      </div>
+    </header>
+
+    <main class="max-w-[1400px] mx-auto px-4 lg:px-8 py-6 space-y-6">
+
+      <!-- Month Controls & Legend Bar -->
+      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+        
+        <div class="flex items-center gap-4">
+          <h2 id="currentMonthTitle" class="text-2xl md:text-3xl font-black text-white tracking-tight">
+            2026年 10月
+          </h2>
+          <button id="backToTodayBtn" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-100 border border-slate-700 font-bold text-xs rounded-lg transition-all">
+            回到今天
+          </button>
+          <div class="flex items-center gap-1.5 ml-1">
+            <button id="prevMonthBtn" class="w-9 h-9 flex items-center justify-center bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-lg transition-all">
+              <i class="fa-solid fa-chevron-left text-xs"></i>
+            </button>
+            <button id="nextMonthBtn" class="w-9 h-9 flex items-center justify-center bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-lg transition-all">
+              <i class="fa-solid fa-chevron-right text-xs"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Sport Legend Badges -->
+        <div class="flex items-center gap-2 flex-wrap text-xs font-bold">
+          <span class="text-slate-300 font-extrabold mr-1">圖示說明：</span>
+          <span class="px-2.5 py-1 rounded-full badge-swim flex items-center gap-1"><i class="fa-solid fa-person-swimming"></i> 游泳</span>
+          <span class="px-2.5 py-1 rounded-full badge-bike flex items-center gap-1"><i class="fa-solid fa-person-biking"></i> 單車</span>
+          <span class="px-2.5 py-1 rounded-full badge-run flex items-center gap-1"><i class="fa-solid fa-person-running"></i> 跑步</span>
+          <span class="px-2.5 py-1 rounded-full badge-core flex items-center gap-1"><i class="fa-solid fa-dumbbell"></i> 核心/肌力</span>
+          <span class="px-2.5 py-1 rounded-full badge-rest flex items-center gap-1"><i class="fa-solid fa-bed"></i> 完全休息</span>
+          <span class="px-2.5 py-1 rounded-full badge-weight flex items-center gap-1"><i class="fa-solid fa-weight-scale"></i> 體重</span>
+        </div>
+
+      </div>
+
+      <div class="w-full">
+        <!-- Weekday Labels -->
+        <div class="grid grid-cols-7 gap-2 md:gap-3 mb-2 text-center text-xs md:text-sm font-extrabold">
+          <div class="text-rose-400 py-2 bg-rose-950/20 border border-rose-900/30 rounded-lg">週日 (SUN)</div>
+          <div class="text-slate-200 py-2 bg-slate-900/40 border border-slate-800 rounded-lg">週一 (MON)</div>
+          <div class="text-slate-200 py-2 bg-slate-900/40 border border-slate-800 rounded-lg">週二 (TUE)</div>
+          <div class="text-slate-200 py-2 bg-slate-900/40 border border-slate-800 rounded-lg">週三 (WED)</div>
+          <div class="text-slate-200 py-2 bg-slate-900/40 border border-slate-800 rounded-lg">週四 (THU)</div>
+          <div class="text-slate-200 py-2 bg-slate-900/40 border border-slate-800 rounded-lg">週五 (FRI)</div>
+          <div class="text-slate-200 py-2 bg-slate-900/40 border border-slate-800 rounded-lg">週六 (SAT)</div>
+        </div>
+
+        <!-- Dynamic Month Days Grid -->
+        <div id="calendarGrid" class="grid grid-cols-7 gap-2 md:gap-3">
+          <!-- Calendar Days generated dynamically -->
+        </div>
+      </div>
+
+      <!-- 💡 徐國峰老師科學化訓練紀錄指南 CARD -->
+      <div class="mt-10 bg-[#111827] border border-slate-800 rounded-2xl p-5 md:p-6 shadow-xl">
+        <h3 class="text-lg md:text-xl font-black text-white flex items-center gap-2 mb-4">
+          💡 徐國峰老師科學化訓練紀錄指南
+        </h3>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          
+          <!-- Card 1: 體重 -->
+          <div class="bg-[#090d16] border border-slate-800 rounded-xl p-4 flex flex-col justify-between space-y-2">
+            <div class="text-sm font-extrabold text-indigo-400 flex items-center gap-2">
+              <i class="fa-solid fa-scale-balanced"></i> ⚖️ 週日定期體重記錄
+            </div>
+            <p class="text-xs text-slate-300 leading-relaxed font-medium">
+              建議每週日晨起空腹測量體重。長距離耐力訓練中，體重趨勢可作為恢復與有氧能量消耗的輔助指標。
+            </p>
+          </div>
+
+          <!-- Card 2: 游泳 -->
+          <div class="bg-[#090d16] border border-slate-800 rounded-xl p-4 flex flex-col justify-between space-y-2">
+            <div class="text-sm font-extrabold text-sky-400 flex items-center gap-2">
+              <i class="fa-solid fa-water"></i> 🏊 游泳 (SPL & 流線型)
+            </div>
+            <p class="text-xs text-slate-300 leading-relaxed font-medium">
+              關注每 25m 划手數（SPL）。SPL 降低代表水阻變小、姿態越好。不需要每次都抓板打水。
+            </p>
+          </div>
+
+          <!-- Card 3: 單車 -->
+          <div class="bg-[#090d16] border border-slate-800 rounded-xl p-4 flex flex-col justify-between space-y-2">
+            <div class="text-sm font-extrabold text-green-400 flex items-center gap-2">
+              <i class="fa-solid fa-bicycle"></i> 🚴 單車 (踏頻 & Zone 2)
+            </div>
+            <p class="text-xs text-slate-300 leading-relaxed font-medium">
+              踏頻保持在 85-95 rpm，心率嚴格控制在 Z2 輕鬆區，單車段也是賽事中補給熱量的黃金時間。
+            </p>
+          </div>
+
+          <!-- Card 4: 跑步 -->
+          <div class="bg-[#090d16] border border-slate-800 rounded-xl p-4 flex flex-col justify-between space-y-2">
+            <div class="text-sm font-extrabold text-orange-400 flex items-center gap-2">
+              <i class="fa-solid fa-person-running"></i> 🏃 跑步 (姿勢跑法 & 步頻)
+            </div>
+            <p class="text-xs text-slate-300 leading-relaxed font-medium">
+              觀察「關鍵姿態 -> 重力落下 -> 拔腿」覺察。固定 178-180 bpm 高步頻，減少膝蓋衝擊。
+            </p>
+          </div>
+
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <footer class="border-t border-slate-800/80 bg-[#070a12] py-4 text-center text-xs text-slate-400 font-semibold mt-8">
+    515 鐵人三項科學化訓練日誌 • 姿勢跑法與 Zone 2 低心率有氧邏輯
+  </footer>
+
+  <!-- Single Day Edit Modal -->
+  <div id="logModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-3 md:p-6 opacity-0 pointer-events-none transition-opacity duration-200">
+    <div class="bg-[#0f172a] border border-slate-700 rounded-2xl w-full max-w-3xl max-h-[92vh] overflow-y-auto shadow-2xl p-5 md:p-7 text-slate-100 flex flex-col gap-6">
+      
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+        <div>
+          <h3 id="modalTitle" class="text-xl md:text-2xl font-black text-white flex items-center gap-2">
+            編輯訓練日誌 - 2026/10/04
+          </h3>
+          <p id="modalSubtitle" class="text-xs text-sky-400 font-bold mt-1"></p>
+        </div>
+        <button id="modalCloseBtn" class="w-9 h-9 flex items-center justify-center rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-all">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <!-- Sunday Banner -->
+      <div id="sundayBanner" class="p-3.5 bg-indigo-500/15 border border-indigo-400/40 rounded-xl text-indigo-200 text-sm font-bold flex items-center gap-3 hidden">
+        <i class="fa-solid fa-scale-balanced text-indigo-400 text-lg"></i>
+        <span>⚖️ 今天是週日！建議晨起空腹量測並記錄本週體重。</span>
+      </div>
+
+      <!-- Medical Fatigue Warning -->
+      <div id="fatigueWarning" class="p-3.5 bg-amber-500/15 border border-amber-400/40 rounded-xl text-amber-200 text-sm font-bold flex items-center gap-3 hidden">
+        <i class="fa-solid fa-triangle-exclamation text-amber-400 text-lg"></i>
+        <span>⚠️ 檢測到高課業壓力且睡眠不足！建議訓練降至 Zone 2 輕鬆區或改為靜態修復。</span>
+      </div>
+
+      <!-- Section 1: Sport Selectors -->
+      <div>
+        <label class="block text-sm font-extrabold text-white mb-2.5">
+          1. 選擇今日運動項目（可複選）：
+        </label>
+        <div class="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
+          <button data-sport="swim" class="sport-select-btn px-3 py-2.5 rounded-xl border-2 border-slate-800 bg-slate-900/60 font-extrabold text-sm text-slate-400 hover:border-sky-500/50 transition-all">
+            🏊 游泳
+          </button>
+          <button data-sport="bike" class="sport-select-btn px-3 py-2.5 rounded-xl border-2 border-slate-800 bg-slate-900/60 font-extrabold text-sm text-slate-400 hover:border-green-500/50 transition-all">
+            🚴 單車
+          </button>
+          <button data-sport="run" class="sport-select-btn px-3 py-2.5 rounded-xl border-2 border-slate-800 bg-slate-900/60 font-extrabold text-sm text-slate-400 hover:border-orange-500/50 transition-all">
+            🏃 跑步
+          </button>
+          <button data-sport="core" class="sport-select-btn px-3 py-2.5 rounded-xl border-2 border-slate-800 bg-slate-900/60 font-extrabold text-sm text-slate-400 hover:border-purple-500/50 transition-all">
+            🏋️ 核心
+          </button>
+          <button data-sport="rest" class="sport-select-btn px-3 py-2.5 rounded-xl border-2 border-slate-800 bg-slate-900/60 font-extrabold text-sm text-slate-400 hover:border-slate-500/50 transition-all">
+            😴 休息
+          </button>
+        </div>
+      </div>
+
+      <!-- Section 2: General & Recovery Inputs -->
+      <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-4 space-y-4">
+        <h4 class="text-sm font-black text-sky-400 flex items-center gap-2">
+          <i class="fa-solid fa-heart-pulse"></i> 2. 生活、體重與恢復指標
+        </h4>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-200 mb-1">⚖️ 體重 (kg)</label>
+            <input type="number" step="0.1" id="inputWeight" placeholder="例如: 68.5" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-white font-bold text-sm focus:border-sky-500 outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-200 mb-1">😴 睡眠小時</label>
+            <input type="number" step="0.5" id="inputSleep" placeholder="例如: 7.5" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-white font-bold text-sm focus:border-sky-500 outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-200 mb-1">🧠 RPE 疲勞 (1-10)</label>
+            <input type="number" min="1" max="10" id="inputRPE" placeholder="1輕鬆 ~ 10疲憊" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-white font-bold text-sm focus:border-sky-500 outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-200 mb-1">🩺 課業/臨床壓力 (1-5)</label>
+            <input type="number" min="1" max="5" id="inputStress" placeholder="1低 ~ 5大考" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-white font-bold text-sm focus:border-sky-500 outline-none">
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 3: Scientific Sport Specific Metrics -->
+      <div class="space-y-4">
+        <h4 class="text-sm font-black text-sky-400 flex items-center gap-2">
+          <i class="fa-solid fa-sliders"></i> 3. 科學化數據與體感覺察
+        </h4>
+
+        <!-- Swim Panel -->
+        <div id="panelSwim" class="sport-panel hidden bg-slate-900/60 border border-sky-500/30 rounded-xl p-4 space-y-3">
+          <div class="text-xs font-black text-sky-300">🏊 游泳數據 (Swim)</div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-bold text-slate-300 mb-1">距離 (m)</label>
+              <input type="number" id="swimDist" placeholder="例如: 1200" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-white font-bold text-sm outline-none">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-300 mb-1">每25m划手數 (SPL)</label>
+              <input type="number" id="swimSPL" placeholder="例如: 19" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-white font-bold text-sm outline-none">
+            </div>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-300 mb-1">水阻與流線型覺察筆記</label>
+            <textarea id="swimNotes" rows="2" placeholder="紀錄轉軸、高肘抓水與軀幹平行體感..." class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-white text-xs outline-none"></textarea>
+          </div>
+        </div>
+
+        <!-- Bike Panel -->
+        <div id="panelBike" class="sport-panel hidden bg-slate-900/60 border border-green-500/30 rounded-xl p-4 space-y-3">
+          <div class="text-xs font-black text-green-300">🚴 單車數據 (Bike)</div>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div>
+              <label class="block text-xs font-bold text-slate-300 mb-1">距離 (km)</label>
+              <input type="number" step="0.1" id="bikeDist" placeholder="例如: 50" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-white font-bold text-sm outline-none">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-300 mb-1">平均踏頻 (rpm)</label>
+              <input type="number" id="bikeCadence" placeholder="目標: 85-95" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-white font-bold text-sm outline-none">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-300 mb-1">Zone 2 心率 %</label>
+              <input type="number" id="bikeZ2" placeholder="例如: 85%" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-white font-bold text-sm outline-none">
+            </div>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-300 mb-1">踩踏與熱量補給筆記</label>
+            <textarea id="bikeNotes" rows="2" placeholder="紀錄踩踏順暢度、能量膠與水分補給時間點..." class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-white text-xs outline-none"></textarea>
+          </div>
+        </div>
+
+        <!-- Run Panel -->
+        <div id="panelRun" class="sport-panel hidden bg-slate-900/60 border border-orange-500/30 rounded-xl p-4 space-y-3">
+          <div class="text-xs font-black text-orange-300">🏃 跑步數據 (Run)</div>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div>
+              <label class="block text-xs font-bold text-slate-300 mb-1">距離 (km)</label>
+              <input type="number" step="0.1" id="runDist" placeholder="例如: 8" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-white font-bold text-sm outline-none">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-300 mb-1">平均步頻 (bpm)</label>
+              <input type="number" id="runCadence" placeholder="目標: 178-180" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-white font-bold text-sm outline-none">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-300 mb-1">平均心率 (bpm)</label>
+              <input type="number" id="runHR" placeholder="例如: 138" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-white font-bold text-sm outline-none">
+            </div>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-300 mb-1">姿勢跑法體感覺察 (關鍵姿態 / 重力落下 / 拔腿)</label>
+            <textarea id="runNotes" rows="2" placeholder="紀錄重心落下、拔腿輕盈度與觸地位置覺察..." class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-white text-xs outline-none"></textarea>
+          </div>
+        </div>
+
+        <!-- Core Panel -->
+        <div id="panelCore" class="sport-panel hidden bg-slate-900/60 border border-purple-500/30 rounded-xl p-4 space-y-3">
+          <div class="text-xs font-black text-purple-300">🏋️ 核心與肌力 (Core/Strength)</div>
+          <textarea id="coreNotes" rows="2" placeholder="紀錄死蟲式、棒式與神經連結訓練..." class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-white text-xs outline-none"></textarea>
+        </div>
+
+        <!-- Rest Panel -->
+        <div id="panelRest" class="sport-panel hidden bg-slate-900/60 border border-slate-500/30 rounded-xl p-4 space-y-3">
+          <div class="text-xs font-black text-slate-300">😴 完全休息與修復 (Rest/Recovery)</div>
+          <textarea id="restNotes" rows="2" placeholder="紀錄滾筒放鬆、靜態伸展與精神修復感..." class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-white text-xs outline-none"></textarea>
+        </div>
+      </div>
+
+      <!-- General Notes -->
+      <div>
+        <label class="block text-xs font-bold text-slate-200 mb-1">📝 當日綜合筆記 / 課業心得</label>
+        <textarea id="generalNotes" rows="2" placeholder="紀錄當日整體體能感受與讀書狀態..." class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-white text-xs outline-none"></textarea>
+      </div>
+
+      <!-- Modal Footer Controls -->
+      <div class="flex items-center justify-between border-t border-slate-800 pt-4 mt-2">
+        <button id="deleteLogBtn" class="px-4 py-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 font-bold text-xs rounded-xl transition-all">
+          <i class="fa-solid fa-trash mr-1"></i> 清除當日
+        </button>
+        <div class="flex items-center gap-3">
+          <button id="cancelLogBtn" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs rounded-xl transition-all">
+            取消
+          </button>
+          <button id="saveLogBtn" class="px-5 py-2 bg-sky-500 hover:bg-sky-400 text-white font-extrabold text-xs rounded-xl shadow-lg shadow-sky-500/20 transition-all">
+            儲存日誌
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Backup Modal -->
+  <div id="backupModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-200">
+    <div class="bg-[#0f172a] border border-slate-700 rounded-2xl w-full max-w-md p-6 text-slate-100 space-y-5">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <h3 class="font-extrabold text-lg text-white">📁 備份與資料管理</h3>
+        <button id="closeBackupBtn" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+      <p class="text-xs text-slate-300 leading-relaxed">
+        所有的訓練數據預設會自動儲存於您的瀏覽器本機中。您也可以匯出 JSON 備份檔，或將備份匯入至其他裝置。
+      </p>
+      <div class="flex flex-col gap-3">
+        <button id="exportJsonBtn" class="w-full py-2.5 bg-sky-500 hover:bg-sky-400 text-white font-extrabold text-sm rounded-xl transition-all flex items-center justify-center gap-2">
+          <i class="fa-solid fa-download"></i> 下載 JSON 備份檔
+        </button>
+        <button id="importJsonTriggerBtn" class="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-extrabold text-sm rounded-xl transition-all flex items-center justify-center gap-2">
+          <i class="fa-solid fa-upload"></i> 匯入 JSON 備份檔
+        </button>
+        <input type="file" id="importFileInput" class="hidden" accept=".json">
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const targetRaceDate = new Date('2026-12-06T00:00:00');
+    let viewDate = new Date(2026, 9, 1); // 2026 October
+    let activeDateStr = '';
+    let logsData = {};
+
+    // Sample Data Matching October 2026 Schedule
+    const screenshotSampleData = {
+      "2026-10-01": { sports: ["run"], runDist: 5, rpe: 3, runNotes: "E區輕鬆跑，姿態穩定" },
+      "2026-10-03": { sports: ["swim"], swimDist: 1200, swimSPL: 19, rpe: 4, swimNotes: "100m主課表維持19划手" },
+      "2026-10-04": { sports: ["run"], runDist: 8, weight: 68.5, rpe: 8, sleep: 7.5, runNotes: "週日長跑 8K，後段稍累，維持180步頻" },
+      "2026-10-06": { sports: ["run"], runDist: 6, rpe: 3, runNotes: "6K輕鬆跑，專注重心落下" },
+      "2026-10-07": { sports: ["core"], rpe: 2, coreNotes: "居家死蟲式與核心穩定" },
+      "2026-10-10": { sports: ["swim"], swimDist: 1400, rpe: 4, swimNotes: "抓水感順暢" },
+      "2026-10-11": { sports: ["bike"], bikeDist: 50, weight: 68.2, rpe: 4, bikeNotes: "50K外騎，Zone 2踏頻90rpm" },
+      "2026-10-13": { sports: ["run"], runDist: 6.5, rpe: 3 },
+      "2026-10-15": { sports: ["rest"], rpe: 1, restNotes: "完全休息，滾筒放鬆" }
+    };
+
+    // DOM References
+    const calendarGrid = document.getElementById('calendarGrid');
+    const currentMonthTitle = document.getElementById('currentMonthTitle');
+    const prevMonthBtn = document.getElementById('prevMonthBtn');
+    const nextMonthBtn = document.getElementById('nextMonthBtn');
+    const backToTodayBtn = document.getElementById('backToTodayBtn');
+    const countdownText = document.getElementById('countdownText');
+    const addTodayLogBtn = document.getElementById('addTodayLogBtn');
+
+    // Modal References
+    const logModal = document.getElementById('logModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalSubtitle = document.getElementById('modalSubtitle');
+    const modalCloseBtn = document.getElementById('modalCloseBtn');
+    const cancelLogBtn = document.getElementById('cancelLogBtn');
+    const saveLogBtn = document.getElementById('saveLogBtn');
+    const deleteLogBtn = document.getElementById('deleteLogBtn');
+
+    const sundayBanner = document.getElementById('sundayBanner');
+    const fatigueWarning = document.getElementById('fatigueWarning');
+
+    // Backup Modal
+    const backupModal = document.getElementById('backupModal');
+    const exportImportModalBtn = document.getElementById('exportImportModalBtn');
+    const closeBackupBtn = document.getElementById('closeBackupBtn');
+    const exportJsonBtn = document.getElementById('exportJsonBtn');
+    const importJsonTriggerBtn = document.getElementById('importJsonTriggerBtn');
+    const importFileInput = document.getElementById('importFileInput');
+
+    function initApp() {
+      loadLogs();
+      updateCountdown();
+      renderCalendar();
+      bindEvents();
+    }
+
+    function loadLogs() {
+      const stored = localStorage.getItem('triathlon_515_logs');
+      if (stored) {
+        try {
+          logsData = JSON.parse(stored);
+        } catch (e) {
+          logsData = { ...screenshotSampleData };
+        }
+      } else {
+        logsData = { ...screenshotSampleData };
+        saveLogs();
+      }
+    }
+
+    function saveLogs() {
+      localStorage.setItem('triathlon_515_logs', JSON.stringify(logsData));
+    }
+
+    function updateCountdown() {
+      const now = new Date();
+      const diffDays = Math.ceil((targetRaceDate - now) / (1000 * 60 * 60 * 24));
+      if (diffDays > 0) {
+        countdownText.innerText = `${diffDays} 天`;
+      } else if (diffDays === 0) {
+        countdownText.innerText = `比賽當天！`;
+      } else {
+        countdownText.innerText = `已順暢完賽 🎉`;
+      }
+    }
+
+    function renderCalendar() {
+      const year = viewDate.getFullYear();
+      const month = viewDate.getMonth();
+
+      currentMonthTitle.innerText = `${year}年 ${month + 1}月`;
+      calendarGrid.innerHTML = '';
+
+      const firstDayIdx = new Date(year, month, 1).getDay();
+      const totalDays = new Date(year, month + 1, 0).getDate();
+      const prevMonthDays = new Date(year, month, 0).getDate();
+
+      const todayStr = new Date().toISOString().split('T')[0];
+
+      // 1. Previous Month Leading Days (High Contrast #64748b)
+      for (let i = firstDayIdx - 1; i >= 0; i--) {
+        const dNum = prevMonthDays - i;
+        const cell = document.createElement('div');
+        cell.className = 'min-h-[120px] md:min-h-[140px] bg-[#0c121e]/40 border border-slate-800/60 rounded-xl p-2.5 opacity-60 flex flex-col justify-between pointer-events-none';
+        cell.innerHTML = `<span class="text-sm font-extrabold text-slate-500">${dNum}</span>`;
+        calendarGrid.appendChild(cell);
+      }
+
+      // 2. Current Month Days
+      for (let day = 1; day <= totalDays; day++) {
+        const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        const dayObj = new Date(year, month, day);
+        const isSunday = (dayObj.getDay() === 0);
+        const isToday = (dateStr === todayStr);
+
+        const log = logsData[dateStr];
+
+        const card = document.createElement('div');
+        let cardStyle = "min-h-[120px] md:min-h-[140px] bg-[#0f172a] hover:bg-[#1e293b] border border-slate-800 hover:border-sky-500/70 rounded-xl p-2.5 md:p-3 cursor-pointer transition-all flex flex-col justify-between group shadow-md";
+        
+        if (isToday) {
+          cardStyle = "min-h-[120px] md:min-h-[140px] bg-[#0f172a] border-2 border-sky-400 rounded-xl p-2.5 md:p-3 cursor-pointer transition-all flex flex-col justify-between group shadow-lg shadow-sky-500/10";
+        }
+
+        let topHeaderHtml = `<div class="flex items-center justify-between">`;
+        topHeaderHtml += `<span class="text-base md:text-lg font-black text-white group-hover:text-sky-300 transition-colors">${day}</span>`;
+        if (isToday) {
+          topHeaderHtml += `<span class="text-[10px] font-black bg-sky-500 text-white px-2 py-0.5 rounded-md">今天</span>`;
+        }
+        topHeaderHtml += `</div>`;
+
+        let bodyHtml = `<div class="flex flex-col gap-1.5 my-2">`;
+        if (log) {
+          // Weight Badge
+          if (log.weight) {
+            bodyHtml += `<div class="inline-flex items-center gap-1 text-xs font-black px-2 py-0.5 rounded-md badge-weight w-fit"><i class="fa-solid fa-weight-scale text-[10px]"></i> ${log.weight}kg</div>`;
+          }
+
+          // Sports Badges
+          if (log.sports && log.sports.length > 0) {
+            log.sports.forEach(s => {
+              if (s === 'swim') {
+                bodyHtml += `<div class="inline-flex items-center gap-1 text-xs font-black px-2 py-0.5 rounded-md badge-swim w-fit"><i class="fa-solid fa-person-swimming text-[10px]"></i> ${log.swimDist || '1.2k'}m</div>`;
+              } else if (s === 'bike') {
+                bodyHtml += `<div class="inline-flex items-center gap-1 text-xs font-black px-2 py-0.5 rounded-md badge-bike w-fit"><i class="fa-solid fa-person-biking text-[10px]"></i> ${log.bikeDist || '40'}k</div>`;
+              } else if (s === 'run') {
+                bodyHtml += `<div class="inline-flex items-center gap-1 text-xs font-black px-2 py-0.5 rounded-md badge-run w-fit"><i class="fa-solid fa-person-running text-[10px]"></i> ${log.runDist || '5'}k</div>`;
+              } else if (s === 'core') {
+                bodyHtml += `<div class="inline-flex items-center gap-1 text-xs font-black px-2 py-0.5 rounded-md badge-core w-fit"><i class="fa-solid fa-dumbbell text-[10px]"></i> 核心</div>`;
+              } else if (s === 'rest') {
+                bodyHtml += `<div class="inline-flex items-center gap-1 text-xs font-black px-2 py-0.5 rounded-md badge-rest w-fit"><i class="fa-solid fa-bed text-[10px]"></i> 休息</div>`;
+              }
+            });
+          }
+        }
+        bodyHtml += `</div>`;
+
+        // RPE Indicator Badge (Bright Purple Contrast #e9d5ff)
+        let bottomHtml = `<div>`;
+        if (log && log.rpe) {
+          bottomHtml += `<span class="text-xs font-extrabold text-purple-200 bg-purple-950/80 border border-purple-500/40 px-2 py-0.5 rounded-md inline-block">RPE ${log.rpe}</span>`;
+        }
+        bottomHtml += `</div>`;
+
+        card.className = cardStyle;
+        card.innerHTML = topHeaderHtml + bodyHtml + bottomHtml;
+        card.addEventListener('click', () => openLogModal(dateStr));
+
+        calendarGrid.appendChild(card);
+      }
+
+      // 3. Trailing Next Month Days
+      const totalCells = firstDayIdx + totalDays;
+      const nextDaysCount = (7 - (totalCells % 7)) % 7;
+      for (let i = 1; i <= nextDaysCount; i++) {
+        const cell = document.createElement('div');
+        cell.className = 'min-h-[120px] md:min-h-[140px] bg-[#0c121e]/40 border border-slate-800/60 rounded-xl p-2.5 opacity-60 flex flex-col justify-between pointer-events-none';
+        cell.innerHTML = `<span class="text-sm font-extrabold text-slate-500">${i}</span>`;
+        calendarGrid.appendChild(cell);
+      }
+    }
+
+    function openLogModal(dateStr) {
+      activeDateStr = dateStr;
+      
+      const [y, m, d] = dateStr.split('-').map(Number);
+      const dateObj = new Date(y, m - 1, d);
+      const isSunday = (dateObj.getDay() === 0);
+      const dayNames = ['週日', '週一', '週二', '週三', '週四', '週五', '週六'];
+
+      modalTitle.innerText = `編輯訓練日誌 - ${dateStr}`;
+      modalSubtitle.innerText = `(${dayNames[dateObj.getDay()]}) • 徐國峰科學化數據登記`;
+
+      if (isSunday) {
+        sundayBanner.classList.remove('hidden');
+      } else {
+        sundayBanner.classList.add('hidden');
+      }
+
+      const log = logsData[dateStr] || {};
+
+      document.getElementById('inputWeight').value = log.weight || '';
+      document.getElementById('inputSleep').value = log.sleep || '';
+      document.getElementById('inputRPE').value = log.rpe || '';
+      document.getElementById('inputStress').value = log.stress || '';
+      document.getElementById('generalNotes').value = log.generalNotes || '';
+
+      document.getElementById('swimDist').value = log.swimDist || '';
+      document.getElementById('swimSPL').value = log.swimSPL || '';
+      document.getElementById('swimNotes').value = log.swimNotes || '';
+
+      document.getElementById('bikeDist').value = log.bikeDist || '';
+      document.getElementById('bikeCadence').value = log.bikeCadence || '';
+      document.getElementById('bikeZ2').value = log.bikeZ2 || '';
+      document.getElementById('bikeNotes').value = log.bikeNotes || '';
+
+      document.getElementById('runDist').value = log.runDist || '';
+      document.getElementById('runCadence').value = log.runCadence || '';
+      document.getElementById('runHR').value = log.runHR || '';
+      document.getElementById('runNotes').value = log.runNotes || '';
+
+      document.getElementById('coreNotes').value = log.coreNotes || '';
+      document.getElementById('restNotes').value = log.restNotes || '';
+
+      document.querySelectorAll('.sport-select-btn').forEach(btn => {
+        const sport = btn.dataset.sport;
+        if (log.sports && log.sports.includes(sport)) {
+          btn.classList.add('active', 'border-sky-500', 'bg-sky-500/20', 'text-sky-300');
+        } else {
+          btn.classList.remove('active', 'border-sky-500', 'bg-sky-500/20', 'text-sky-300');
+        }
+      });
+
+      updateSportPanels();
+      checkFatigueWarning();
+
+      logModal.classList.remove('opacity-0', 'pointer-events-none');
+    }
+
+    function closeLogModal() {
+      logModal.classList.add('opacity-0', 'pointer-events-none');
+    }
+
+    function updateSportPanels() {
+      const activeSports = Array.from(document.querySelectorAll('.sport-select-btn.active')).map(b => b.dataset.sport);
+
+      document.getElementById('panelSwim').classList.toggle('hidden', !activeSports.includes('swim'));
+      document.getElementById('panelBike').classList.toggle('hidden', !activeSports.includes('bike'));
+      document.getElementById('panelRun').classList.toggle('hidden', !activeSports.includes('run'));
+      document.getElementById('panelCore').classList.toggle('hidden', !activeSports.includes('core'));
+      document.getElementById('panelRest').classList.toggle('hidden', !activeSports.includes('rest'));
+    }
+
+    function checkFatigueWarning() {
+      const stress = Number(document.getElementById('inputStress').value) || 0;
+      const sleep = Number(document.getElementById('inputSleep').value) || 24;
+
+      if (stress >= 4 && sleep < 6.5) {
+        fatigueWarning.classList.remove('hidden');
+      } else {
+        fatigueWarning.classList.add('hidden');
+      }
+    }
+
+    function saveActiveLog() {
+      const activeSports = Array.from(document.querySelectorAll('.sport-select-btn.active')).map(b => b.dataset.sport);
+
+      const log = {
+        sports: activeSports,
+        weight: document.getElementById('inputWeight').value,
+        sleep: document.getElementById('inputSleep').value,
+        rpe: document.getElementById('inputRPE').value,
+        stress: document.getElementById('inputStress').value,
+        generalNotes: document.getElementById('generalNotes').value,
+
+        swimDist: document.getElementById('swimDist').value,
+        swimSPL: document.getElementById('swimSPL').value,
+        swimNotes: document.getElementById('swimNotes').value,
+
+        bikeDist: document.getElementById('bikeDist').value,
+        bikeCadence: document.getElementById('bikeCadence').value,
+        bikeZ2: document.getElementById('bikeZ2').value,
+        bikeNotes: document.getElementById('bikeNotes').value,
+
+        runDist: document.getElementById('runDist').value,
+        runCadence: document.getElementById('runCadence').value,
+        runHR: document.getElementById('runHR').value,
+        runNotes: document.getElementById('runNotes').value,
+
+        coreNotes: document.getElementById('coreNotes').value,
+        restNotes: document.getElementById('restNotes').value
+      };
+
+      logsData[activeDateStr] = log;
+      saveLogs();
+      renderCalendar();
+      closeLogModal();
+    }
+
+    function deleteActiveLog() {
+      delete logsData[activeDateStr];
+      saveLogs();
+      renderCalendar();
+      closeLogModal();
+    }
+
+    function bindEvents() {
+      prevMonthBtn.addEventListener('click', () => {
+        viewDate.setMonth(viewDate.getMonth() - 1);
+        renderCalendar();
+      });
+
+      nextMonthBtn.addEventListener('click', () => {
+        viewDate.setMonth(viewDate.getMonth() + 1);
+        renderCalendar();
+      });
+
+      backToTodayBtn.addEventListener('click', () => {
+        viewDate = new Date(2026, 9, 1);
+        renderCalendar();
+      });
+
+      addTodayLogBtn.addEventListener('click', () => {
+        const todayStr = new Date().toISOString().split('T')[0];
+        openLogModal(todayStr);
+      });
+
+      modalCloseBtn.addEventListener('click', closeLogModal);
+      cancelLogBtn.addEventListener('click', closeLogModal);
+      saveLogBtn.addEventListener('click', saveActiveLog);
+      deleteLogBtn.addEventListener('click', deleteActiveLog);
+
+      document.querySelectorAll('.sport-select-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          btn.classList.toggle('active');
+          btn.classList.toggle('border-sky-500');
+          btn.classList.toggle('bg-sky-500/20');
+          btn.classList.toggle('text-sky-300');
+          updateSportPanels();
+        });
+      });
+
+      document.getElementById('inputStress').addEventListener('input', checkFatigueWarning);
+      document.getElementById('inputSleep').addEventListener('input', checkFatigueWarning);
+
+      // Backup Modal Events
+      exportImportModalBtn.addEventListener('click', () => {
+        backupModal.classList.remove('opacity-0', 'pointer-events-none');
+      });
+
+      closeBackupBtn.addEventListener('click', () => {
+        backupModal.classList.add('opacity-0', 'pointer-events-none');
+      });
+
+      exportJsonBtn.addEventListener('click', () => {
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(logsData, null, 2));
+        const downloadAnchor = document.createElement('a');
+        downloadAnchor.setAttribute("href", dataStr);
+        downloadAnchor.setAttribute("download", `515_triathlon_logs_${new Date().toISOString().split('T')[0]}.json`);
+        document.body.appendChild(downloadAnchor);
+        downloadAnchor.click();
+        downloadAnchor.remove();
+      });
+
+      importJsonTriggerBtn.addEventListener('click', () => {
+        importFileInput.click();
+      });
+
+      importFileInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          try {
+            logsData = JSON.parse(event.target.result);
+            saveLogs();
+            renderCalendar();
+            backupModal.classList.add('opacity-0', 'pointer-events-none');
+          } catch (err) {
+            // Silently handle error
+          }
+        };
+        reader.readAsText(file);
+      });
+    }
+
+    window.onload = function() {
+      initApp();
+    };
+  </script>
+</body>
+</html>
