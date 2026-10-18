@@ -1,507 +1,1062 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="zh-TW" class="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>12/6 515 鐵人三項訓練協調表 (官方行事曆精準校對版)</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>515 鐵人三項科學化訓練日誌 | 雲端同步版</title>
+  
+  <!-- Tailwind CSS & FontAwesome Icons -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+TC:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              bg: '#090d16',
+              card: '#111827',
+              cardHover: '#1f2937',
+              border: '#1e293b',
+              borderBright: '#334155',
+              swim: '#0284c7',
+              swimText: '#7dd3fc',
+              bike: '#16a34a',
+              bikeText: '#86efac',
+              run: '#ea580c',
+              runText: '#fdba74',
+              core: '#9333ea',
+              coreText: '#e9d5ff',
+              rest: '#475569',
+              restText: '#f1f5f9',
+              weight: '#6366f1',
+              weightText: '#c7d2fe',
+            }
+          },
+          fontFamily: {
+            sans: ['Noto Sans TC', 'Inter', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #090d16;
+      color: #f8fafc;
+      font-family: 'Noto Sans TC', 'Inter', sans-serif;
+    }
     
-    <!-- 引入 Firebase 雲端資料庫 SDK -->
-    <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-database-compat.js"></script>
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #090d16;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1e293b;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #334155;
+    }
 
-    <style>
-        :root {
-            --swim-color: rgba(59, 130, 246, 0.95);
-            --bike-color: rgba(16, 185, 129, 0.95);
-            --run-color: rgba(239, 68, 68, 0.95);
-            --bg-color: #f3f4f6;
-            --course-bg: #fdf6e3;
-            --exam-bg: #ffe4e6;
-            --holiday-bg: #fee2e2;
-        }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: var(--bg-color); margin: 0; padding: 10px; color: #333; }
-        
-        .header { display: flex; flex-direction: column; align-items: center; gap: 8px; margin-bottom: 12px; }
-        .toolbar { display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 1000px; background: white; padding: 10px 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); box-sizing: border-box;}
-        
-        /* 導覽列 */
-        .nav-group { display: flex; align-items: center; justify-content: space-between; width: 100%; max-width: 1000px; background: white; padding: 8px 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); box-sizing: border-box; font-weight: bold;}
-        .nav-btn { cursor: pointer; padding: 6px 14px; border: none; background: #e5e7eb; border-radius: 6px; font-weight: bold; font-size: 0.9rem;}
-        .nav-btn:hover { background: #d1d5db; }
-        
-        /* 統計區 */
-        .stats { display: flex; gap: 8px; font-weight: bold; width: 100%; max-width: 1000px; justify-content: space-around; box-sizing: border-box;}
-        .stat-item { padding: 6px 12px; border-radius: 20px; color: white; font-size: 0.85rem; flex: 1; text-align: center;}
-        .stat-swim { background: #3b82f6; } .stat-bike { background: #10b981; } .stat-run { background: #ef4444; }
-
-        .user-info { font-weight: bold; color: #4b5563; font-size: 0.95rem; display: flex; align-items: center; gap: 8px;}
-        .switch-user { cursor: pointer; color: #3b82f6; text-decoration: underline; font-size: 0.85rem;}
-        
-        /* 小鈴鐺與通知 */
-        .bell-container { position: relative; cursor: pointer; font-size: 1.4rem; }
-        .badge { position: absolute; top: -5px; right: -8px; background: red; color: white; border-radius: 50%; padding: 2px 6px; font-size: 0.65rem; font-weight: bold; display: none;}
-        
-        #toast-container { position: fixed; top: 15px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 10px; width: 90%; max-width: 400px;}
-        .toast { background: #1f2937; color: white; padding: 10px 15px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); font-size: 0.85rem; font-weight: bold; text-align: center; opacity: 0.95;}
-
-        /* 表格結構 */
-        .table-container { background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); max-width: 1000px; margin: 0 auto; overflow: hidden; padding-bottom: 20px;}
-        table { width: 100%; border-collapse: collapse; table-layout: fixed;}
-        th, td { border: 1px solid #e5e7eb; padding: 6px; text-align: center; vertical-align: top; }
-        th { background-color: #f9fafb; font-weight: 600; color: #4b5563; font-size: 0.85rem;}
-        .time-col { background-color: #f9fafb; font-weight: bold; vertical-align: middle; font-size: 0.8rem;}
-        
-        td.interactive { cursor: pointer; height: 60px; position: relative; padding: 2px; box-sizing: border-box; }
-        td.interactive:hover { background-color: #f3f4f6; }
-
-        .course-block { background-color: var(--course-bg); font-size: 0.75rem; color: #4b5563; padding: 4px; border-radius: 4px; margin-bottom: 2px; text-align: left;}
-        .holiday-block { background-color: var(--holiday-bg); color: #b91c1c; font-weight: bold; text-align: center;}
-        .exam-block { background-color: var(--exam-bg); color: #9f1239; font-weight: bold; text-align: center;}
-
-        /* 訓練塊 */
-        .training-plan { position: absolute; top: 2px; left: 2px; width: calc(100% - 4px); padding: 4px; border-radius: 6px; color: white; font-weight: bold; font-size: 0.8rem; box-shadow: 0 2px 4px rgba(0,0,0,0.3); z-index: 20; box-sizing: border-box; overflow: hidden; display: flex; flex-direction: column; justify-content: center;}
-        .training-plan.swim { background-color: var(--swim-color); }
-        .training-plan.bike { background-color: var(--bike-color); }
-        .training-plan.run { background-color: var(--run-color); }
-        .status-proposed { border: 2px dashed #fff; }
-        .status-confirmed { border: 2px solid #fff; }
-
-        /* 手機版放大控制 CSS */
-        @media (min-width: 768px) {
-            .mobile-back-btn { display: none !important; }
-            .time-col { width: 10%; }
-            .day-col { display: table-cell !important; }
-            .clickable-th { cursor: default; }
-        }
-
-        @media (max-width: 767px) {
-            .clickable-th { cursor: pointer; background-color: #eff6ff; color: #2563eb; }
-            .clickable-th::after { content: " 🔍"; font-size: 0.7rem; }
-            th { padding: 8px 2px; font-size: 0.75rem; }
-            
-            body.mobile-zoom-mode .day-col { display: none; }
-            body.mobile-zoom-mode .day-col.active-day { display: table-cell !important; }
-            body.mobile-zoom-mode .time-col { width: 22%; }
-            body.mobile-zoom-mode .mobile-back-btn { display: inline-block !important; }
-            body.mobile-zoom-mode .clickable-th::after { content: ""; }
-        }
-
-        /* Modal 彈窗 */
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 100;}
-        .modal { background: white; padding: 20px; border-radius: 8px; width: 85%; max-width: 320px; max-height: 80vh; overflow-y: auto; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2);}
-        .modal-btns { display: flex; flex-direction: column; gap: 10px; margin-top: 15px;}
-        .btn { padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; color: white; font-size: 0.95rem;}
-        .btn-swim { background: #3b82f6; } .btn-bike { background: #10b981; } .btn-run { background: #ef4444; }
-        .btn-agree { background: #10b981; } .btn-disagree { background: #ef4444; } .btn-cancel { background: #9ca3af; }
-        
-        .notification-item { padding: 10px; border-bottom: 1px solid #eee; text-align: left; font-size: 0.85rem;}
-        .notification-item.unread { background-color: #eff6ff; border-left: 4px solid #3b82f6;}
-        .notification-time { font-size: 0.65rem; color: #9ca3af; margin-top: 4px;}
-    </style>
+    .badge-swim {
+      background: rgba(14, 165, 233, 0.25);
+      border: 1px solid rgba(56, 189, 248, 0.6);
+      color: #7dd3fc;
+    }
+    .badge-bike {
+      background: rgba(34, 197, 94, 0.25);
+      border: 1px solid rgba(74, 222, 128, 0.6);
+      color: #86efac;
+    }
+    .badge-run {
+      background: rgba(249, 115, 22, 0.25);
+      border: 1px solid rgba(251, 146, 60, 0.6);
+      color: #fdba74;
+    }
+    .badge-core {
+      background: rgba(168, 85, 247, 0.25);
+      border: 1px solid rgba(192, 132, 252, 0.6);
+      color: #e9d5ff;
+    }
+    .badge-rest {
+      background: rgba(100, 116, 139, 0.25);
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      color: #f1f5f9;
+    }
+    .badge-weight {
+      background: rgba(99, 102, 241, 0.25);
+      border: 1px solid rgba(129, 140, 248, 0.6);
+      color: #c7d2fe;
+    }
+  </style>
 </head>
-<body>
+<body class="min-h-screen flex flex-col justify-between selection:bg-sky-500 selection:text-white">
 
-    <div id="toast-container"></div>
-
-    <div class="header">
-        <h2 style="font-size: 1.2rem; margin: 5px 0;">🏃‍♂️ 12/6 515 鐵人三項訓練協調表</h2>
+  <div class="w-full">
+    <!-- Header -->
+    <header class="border-b border-slate-800 bg-[#090d16]/95 sticky top-0 z-40 backdrop-blur-md px-4 lg:px-8 py-3.5">
+      <div class="max-w-[1400px] mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
         
-        <div class="toolbar">
-            <div class="user-info">
-                <span>👤 <span id="display-user" style="color: #2563eb;"></span></span>
-                <span class="switch-user" onclick="switchUser()">[更換名字]</span>
-            </div>
-            <div class="bell-container" onclick="openNotifications()">
-                🔔<span class="badge" id="noti-badge">0</span>
-            </div>
-        </div>
-        
-        <!-- 當週統計數據 -->
-        <div class="stats">
-            <div class="stat-item stat-swim" id="stat-swim">🏊 0次(0h)</div>
-            <div class="stat-item stat-bike" id="stat-bike">🚴 0次(0h)</div>
-            <div class="stat-item stat-run" id="stat-run">🏃 0次(0h)</div>
+        <!-- Header Title & Race Target -->
+        <div>
+          <div class="flex items-center gap-3">
+            <h1 class="text-xl md:text-2xl font-black tracking-tight text-white flex items-center gap-2">
+              <i class="fa-solid fa-person-triathlon text-sky-400"></i>
+              515 鐵人三項科學化訓練日誌
+            </h1>
+            <span class="px-2.5 py-0.5 text-xs font-bold rounded-full bg-sky-500/20 text-sky-300 border border-sky-400/40">
+              徐國峰邏輯
+            </span>
+            <span id="cloudStatusBadge" class="px-2.5 py-0.5 text-xs font-bold rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 flex items-center gap-1">
+              <i class="fa-solid fa-cloud text-[10px] animate-pulse"></i> 雲端連線中
+            </span>
+          </div>
+          <div class="flex items-center gap-2 mt-1 text-sm font-semibold text-slate-200">
+            <i class="fa-solid fa-clock text-amber-400"></i>
+            <span>距離 2026/12/06 賽事：<strong id="countdownText" class="text-amber-400 text-base font-extrabold">-- 天</strong></span>
+            <span class="text-slate-500">•</span>
+            <span class="text-slate-300 font-medium">目標：輕鬆順暢完賽</span>
+          </div>
         </div>
 
-        <!-- 導覽列 -->
-        <div class="nav-group">
-            <button class="nav-btn" onclick="changeWeek(-1)">◀ 上一週</button>
+        <!-- Top Action Buttons -->
+        <div class="flex items-center gap-2.5 flex-wrap">
+          <button id="openSyncModalBtn" class="px-3.5 py-2 bg-indigo-600/90 hover:bg-indigo-500 text-white font-extrabold text-sm rounded-xl shadow-lg shadow-indigo-500/20 transition-all flex items-center gap-2 active:scale-95">
+            <i class="fa-solid fa-mobile-screen-button"></i>
+            <span>📱/💻 跨裝置同步</span>
+          </button>
+          <button id="addTodayLogBtn" class="px-4 py-2 bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white font-extrabold text-sm rounded-xl shadow-lg shadow-sky-500/20 hover:shadow-sky-500/40 transition-all flex items-center gap-2 active:scale-95">
+            <i class="fa-solid fa-plus text-xs"></i>
+            <span>新增今日日誌</span>
+          </button>
+          <button id="exportImportModalBtn" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold text-sm rounded-xl transition-all flex items-center gap-2 active:scale-95">
+            <i class="fa-solid fa-folder-open text-slate-400"></i>
+            <span>備份/匯入</span>
+          </button>
+        </div>
+
+      </div>
+    </header>
+
+    <main class="max-w-[1400px] mx-auto px-4 lg:px-8 py-6 space-y-6">
+
+      <!-- Month Controls & Legend Bar -->
+      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+        
+        <div class="flex items-center gap-4">
+          <h2 id="currentMonthTitle" class="text-2xl md:text-3xl font-black text-white tracking-tight">
+            2026年 10月
+          </h2>
+          <button id="backToTodayBtn" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-100 border border-slate-700 font-bold text-xs rounded-lg transition-all">
+            回到今天
+          </button>
+          <div class="flex items-center gap-1.5 ml-1">
+            <button id="prevMonthBtn" class="w-9 h-9 flex items-center justify-center bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-lg transition-all">
+              <i class="fa-solid fa-chevron-left text-xs"></i>
+            </button>
+            <button id="nextMonthBtn" class="w-9 h-9 flex items-center justify-center bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-lg transition-all">
+              <i class="fa-solid fa-chevron-right text-xs"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Sport Legend Badges -->
+        <div class="flex items-center gap-2 flex-wrap text-xs font-bold">
+          <span class="text-slate-300 font-extrabold mr-1">圖示說明：</span>
+          <span class="px-2.5 py-1 rounded-full badge-swim flex items-center gap-1"><i class="fa-solid fa-person-swimming"></i> 游泳</span>
+          <span class="px-2.5 py-1 rounded-full badge-bike flex items-center gap-1"><i class="fa-solid fa-person-biking"></i> 單車</span>
+          <span class="px-2.5 py-1 rounded-full badge-run flex items-center gap-1"><i class="fa-solid fa-person-running"></i> 跑步</span>
+          <span class="px-2.5 py-1 rounded-full badge-core flex items-center gap-1"><i class="fa-solid fa-dumbbell"></i> 核心/肌力</span>
+          <span class="px-2.5 py-1 rounded-full badge-rest flex items-center gap-1"><i class="fa-solid fa-bed"></i> 完全休息</span>
+          <span class="px-2.5 py-1 rounded-full badge-weight flex items-center gap-1"><i class="fa-solid fa-weight-scale"></i> 體重</span>
+        </div>
+
+      </div>
+
+      <div class="w-full">
+        <!-- Weekday Labels -->
+        <div class="grid grid-cols-7 gap-1 md:gap-3 mb-2 text-center text-xs md:text-sm font-extrabold">
+          <div class="text-rose-400 py-1.5 md:py-2 bg-rose-950/20 border border-rose-900/30 rounded-lg">
+            <span class="inline md:hidden">日</span><span class="hidden md:inline">週日 (SUN)</span>
+          </div>
+          <div class="text-slate-200 py-1.5 md:py-2 bg-slate-900/40 border border-slate-800 rounded-lg">
+            <span class="inline md:hidden">一</span><span class="hidden md:inline">週一 (MON)</span>
+          </div>
+          <div class="text-slate-200 py-1.5 md:py-2 bg-slate-900/40 border border-slate-800 rounded-lg">
+            <span class="inline md:hidden">二</span><span class="hidden md:inline">週二 (TUE)</span>
+          </div>
+          <div class="text-slate-200 py-1.5 md:py-2 bg-slate-900/40 border border-slate-800 rounded-lg">
+            <span class="inline md:hidden">三</span><span class="hidden md:inline">週三 (WED)</span>
+          </div>
+          <div class="text-slate-200 py-1.5 md:py-2 bg-slate-900/40 border border-slate-800 rounded-lg">
+            <span class="inline md:hidden">四</span><span class="hidden md:inline">週四 (THU)</span>
+          </div>
+          <div class="text-slate-200 py-1.5 md:py-2 bg-slate-900/40 border border-slate-800 rounded-lg">
+            <span class="inline md:hidden">五</span><span class="hidden md:inline">週五 (FRI)</span>
+          </div>
+          <div class="text-slate-200 py-1.5 md:py-2 bg-slate-900/40 border border-slate-800 rounded-lg">
+            <span class="inline md:hidden">六</span><span class="hidden md:inline">週六 (SAT)</span>
+          </div>
+        </div>
+
+        <!-- Dynamic Month Days Grid -->
+        <div id="calendarGrid" class="grid grid-cols-7 gap-1 md:gap-3">
+          <!-- Calendar Days generated dynamically -->
+        </div>
+      </div>
+
+      <!-- 💡 徐國峰老師科學化訓練紀錄指南 CARD -->
+      <div class="mt-10 bg-[#111827] border border-slate-800 rounded-2xl p-5 md:p-6 shadow-xl">
+        <h3 class="text-lg md:text-xl font-black text-white flex items-center gap-2 mb-4">
+          💡 徐國峰老師科學化訓練紀錄指南
+        </h3>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          
+          <!-- Card 1: 體重 -->
+          <div class="bg-[#090d16] border border-slate-800 rounded-xl p-4 flex flex-col justify-between space-y-2">
+            <div class="text-base font-extrabold text-indigo-400 flex items-center gap-2">
+              <i class="fa-solid fa-scale-balanced"></i> ⚖️ 週日定期體重記錄
+            </div>
+            <p class="text-xs text-slate-300 leading-relaxed font-medium">
+              建議每週日晨起空腹測量體重。長距離耐力訓練中，體重趨勢可作為恢復與有氧能量消耗的輔助指標。
+            </p>
+          </div>
+
+          <!-- Card 2: 游泳 -->
+          <div class="bg-[#090d16] border border-slate-800 rounded-xl p-4 flex flex-col justify-between space-y-2">
+            <div class="text-base font-extrabold text-sky-400 flex items-center gap-2">
+              <i class="fa-solid fa-water"></i> 🏊 游泳 (SPL & 流線型)
+            </div>
+            <p class="text-xs text-slate-300 leading-relaxed font-medium">
+              關注每 25m 划手數（SPL）。SPL 降低代表水阻變小、姿態越好。不需要每次都抓板打水。
+            </p>
+          </div>
+
+          <!-- Card 3: 單車 -->
+          <div class="bg-[#090d16] border border-slate-800 rounded-xl p-4 flex flex-col justify-between space-y-2">
+            <div class="text-base font-extrabold text-green-400 flex items-center gap-2">
+              <i class="fa-solid fa-bicycle"></i> 🚴 單車 (踏頻 & Zone 2)
+            </div>
+            <p class="text-xs text-slate-300 leading-relaxed font-medium">
+              踏頻保持在 85-95 rpm，心率嚴格控制在 Z2 輕鬆區，單車段也是賽事中補給熱量的黃金時間。
+            </p>
+          </div>
+
+          <!-- Card 4: 跑步 -->
+          <div class="bg-[#090d16] border border-slate-800 rounded-xl p-4 flex flex-col justify-between space-y-2">
+            <div class="text-base font-extrabold text-orange-400 flex items-center gap-2">
+              <i class="fa-solid fa-person-running"></i> 🏃 跑步 (姿勢跑法 & 步頻)
+            </div>
+            <p class="text-xs text-slate-300 leading-relaxed font-medium">
+              觀察「關鍵姿態 -> 重力落下 -> 拔腿」覺察。固定 178-180 bpm 高步頻，減少膝蓋衝擊。
+            </p>
+          </div>
+
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <footer class="border-t border-slate-800/80 bg-[#070a12] py-4 text-center text-xs text-slate-400 font-semibold mt-8">
+    515 鐵人三項科學化訓練日誌 • 姿勢跑法與 Zone 2 低心率有氧邏輯 (Firebase 雲端同步版)
+  </footer>
+
+  <!-- Single Day Edit Modal (Large Typography Optimizations) -->
+  <div id="logModal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center p-3 md:p-6 opacity-0 pointer-events-none transition-opacity duration-200">
+    <div class="bg-[#0f172a] border border-slate-700 rounded-2xl w-full max-w-4xl max-h-[92vh] overflow-y-auto shadow-2xl p-6 md:p-8 text-slate-100 flex flex-col gap-7">
+      
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+        <div>
+          <h3 id="modalTitle" class="text-2xl md:text-3xl font-black text-white flex items-center gap-3 tracking-tight">
+            編輯訓練日誌
+          </h3>
+          <p id="modalSubtitle" class="text-sm font-extrabold text-sky-400 mt-1"></p>
+        </div>
+        <button id="modalCloseBtn" class="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-all text-xl">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Sunday Banner -->
+      <div id="sundayBanner" class="p-4 bg-indigo-500/15 border border-indigo-400/40 rounded-xl text-indigo-200 text-base font-bold flex items-center gap-3 hidden">
+        <i class="fa-solid fa-scale-balanced text-indigo-400 text-xl"></i>
+        <span>⚖️ 今天是週日！建議晨起空腹量測並記錄本週體重。</span>
+      </div>
+
+      <!-- Medical Fatigue Warning -->
+      <div id="fatigueWarning" class="p-4 bg-amber-500/15 border border-amber-400/40 rounded-xl text-amber-200 text-base font-bold flex items-center gap-3 hidden">
+        <i class="fa-solid fa-triangle-exclamation text-amber-400 text-xl"></i>
+        <span>⚠️ 檢測到高課業壓力且睡眠不足！建議訓練降至 Zone 2 輕鬆區或改為靜態修復。</span>
+      </div>
+
+      <!-- Section 1: Sport Selectors -->
+      <div>
+        <label class="block text-base md:text-lg font-black text-white mb-3">
+          1. 選擇今日運動項目（可複選）：
+        </label>
+        <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
+          <button data-sport="swim" class="sport-select-btn px-4 py-3 rounded-xl border-2 border-slate-800 bg-slate-900/80 font-black text-base text-slate-300 hover:border-sky-500/60 transition-all">
+            🏊 游泳
+          </button>
+          <button data-sport="bike" class="sport-select-btn px-4 py-3 rounded-xl border-2 border-slate-800 bg-slate-900/80 font-black text-base text-slate-300 hover:border-green-500/60 transition-all">
+            🚴 單車
+          </button>
+          <button data-sport="run" class="sport-select-btn px-4 py-3 rounded-xl border-2 border-slate-800 bg-slate-900/80 font-black text-base text-slate-300 hover:border-orange-500/60 transition-all">
+            🏃 跑步
+          </button>
+          <button data-sport="core" class="sport-select-btn px-4 py-3 rounded-xl border-2 border-slate-800 bg-slate-900/80 font-black text-base text-slate-300 hover:border-purple-500/60 transition-all">
+            🏋️ 核心
+          </button>
+          <button data-sport="rest" class="sport-select-btn px-4 py-3 rounded-xl border-2 border-slate-800 bg-slate-900/80 font-black text-base text-slate-300 hover:border-slate-500/60 transition-all">
+            😴 休息
+          </button>
+        </div>
+      </div>
+
+      <!-- Section 2: General & Recovery Inputs (ENLARGED TYPOGRAPHY) -->
+      <div class="bg-slate-900/70 border border-slate-800 rounded-xl p-5 space-y-5">
+        <h4 class="text-lg md:text-xl font-black text-sky-400 flex items-center gap-2">
+          <i class="fa-solid fa-heart-pulse"></i> 2. 生活、體重與恢復指標
+        </h4>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5">
+          <div>
+            <label class="block text-base font-extrabold text-slate-100 mb-2">⚖️ 體重 (kg)</label>
+            <input type="number" step="0.1" id="inputWeight" placeholder="例如: 68.5" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-white font-black text-lg focus:border-sky-500 outline-none placeholder:text-slate-400 placeholder:font-normal">
+          </div>
+          <div>
+            <label class="block text-base font-extrabold text-slate-100 mb-2">😴 睡眠小時</label>
+            <input type="number" step="0.5" id="inputSleep" placeholder="例如: 7.5" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-white font-black text-lg focus:border-sky-500 outline-none placeholder:text-slate-400 placeholder:font-normal">
+          </div>
+          <div>
+            <label class="block text-base font-extrabold text-slate-100 mb-2">🧠 RPE 疲勞 (1-10)</label>
+            <input type="number" min="1" max="10" id="inputRPE" placeholder="1輕鬆 ~ 10疲憊" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-white font-black text-lg focus:border-sky-500 outline-none placeholder:text-slate-400 placeholder:font-normal">
+          </div>
+          <div>
+            <label class="block text-base font-extrabold text-slate-100 mb-2">🩺 課業壓力 (1-5)</label>
+            <input type="number" min="1" max="5" id="inputStress" placeholder="1低 ~ 5大考" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-white font-black text-lg focus:border-sky-500 outline-none placeholder:text-slate-400 placeholder:font-normal">
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 3: Scientific Sport Specific Metrics (ENLARGED TYPOGRAPHY) -->
+      <div class="space-y-5">
+        <h4 class="text-lg md:text-xl font-black text-sky-400 flex items-center gap-2">
+          <i class="fa-solid fa-sliders"></i> 3. 科學化數據與體感覺察
+        </h4>
+
+        <!-- Swim Panel -->
+        <div id="panelSwim" class="sport-panel hidden bg-slate-900/70 border border-sky-500/40 rounded-xl p-5 space-y-4">
+          <div class="text-lg font-black text-sky-300">🏊 游泳數據 (Swim)</div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-                <span id="desktop-week-title" style="font-size: 0.95rem; color: #1f2937;">載入中...</span>
-                <button class="nav-btn mobile-back-btn" style="display:none; margin-left: 8px; background: #3b82f6; color: white;" onclick="resetMobileView()">🔍 返回全週</button>
+              <label class="block text-base font-extrabold text-slate-100 mb-2">距離 (m)</label>
+              <input type="number" id="swimDist" placeholder="例如: 1200" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-white font-black text-lg outline-none placeholder:text-slate-400 placeholder:font-normal">
             </div>
-            <button class="nav-btn" onclick="changeWeek(1)">下一週 ▶</button>
-        </div>
-    </div>
-
-    <div class="table-container">
-        <table id="schedule-table">
-            <thead>
-                <tr id="table-header">
-                    <th class="time-col">時間</th>
-                    <th class="day-col clickable-th" id="th-1" onclick="zoomDay(1)">一</th>
-                    <th class="day-col clickable-th" id="th-2" onclick="zoomDay(2)">二</th>
-                    <th class="day-col clickable-th" id="th-3" onclick="zoomDay(3)">三</th>
-                    <th class="day-col clickable-th" id="th-4" onclick="zoomDay(4)">四</th>
-                    <th class="day-col clickable-th" id="th-5" onclick="zoomDay(5)">五</th>
-                    <th class="day-col clickable-th" id="th-6" style="color:#2563eb" onclick="zoomDay(6)">六</th>
-                    <th class="day-col clickable-th" id="th-7" style="color:#ef4444" onclick="zoomDay(7)">日</th>
-                </tr>
-            </thead>
-            <tbody id="table-body"></tbody>
-        </table>
-    </div>
-
-    <!-- 安排訓練 Modal -->
-    <div class="modal-overlay" id="action-modal">
-        <div class="modal">
-            <h3 id="modal-title" style="margin-top:0; font-size: 1.1rem;">安排訓練</h3>
-            <p id="modal-desc" style="font-size: 0.85rem; color: #4b5563; margin-bottom: 5px;"></p>
-            <div id="duration-container" style="text-align: left; margin: 10px 0;">
-                <label style="font-size: 0.85rem; font-weight: bold; color: #374151;">⏱ 預計訓練時長：</label>
-                <select id="plan-duration" style="width:100%; padding:8px; margin-top:5px; border-radius:6px; font-size: 0.9rem;">
-                    <option value="1">1 小時</option><option value="1.5">1.5 小時</option><option value="2">2 小時</option>
-                    <option value="2.5">2.5 小時</option><option value="3">3 小時</option><option value="4">4 小時</option>
-                </select>
+            <div>
+              <label class="block text-base font-extrabold text-slate-100 mb-2">每25m划手數 (SPL)</label>
+              <input type="number" id="swimSPL" placeholder="例如: 19" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-white font-black text-lg outline-none placeholder:text-slate-400 placeholder:font-normal">
             </div>
-            <div class="modal-btns" id="modal-actions"></div>
+          </div>
+          <div>
+            <label class="block text-base font-extrabold text-slate-100 mb-2">水阻與流線型覺察筆記</label>
+            <textarea id="swimNotes" rows="2" placeholder="紀錄轉軸、高肘抓水與軀幹平行體感..." class="w-full bg-slate-950 border border-slate-700 rounded-xl p-3.5 text-white font-medium text-base outline-none placeholder:text-slate-400 placeholder:font-normal"></textarea>
+          </div>
         </div>
-    </div>
 
-    <!-- 通知中心 Modal -->
-    <div class="modal-overlay" id="noti-modal">
-        <div class="modal">
-            <h3 style="margin-top:0; font-size: 1.1rem;">🔔 通知中心</h3>
-            <div id="noti-list" style="max-height: 40vh; overflow-y: auto; margin-bottom: 15px;"></div>
-            <button class="btn btn-cancel" style="width: 100%; padding:10px;" onclick="closeNotifications()">關閉並標為已讀</button>
+        <!-- Bike Panel -->
+        <div id="panelBike" class="sport-panel hidden bg-slate-900/70 border border-green-500/40 rounded-xl p-5 space-y-4">
+          <div class="text-lg font-black text-green-300">🚴 單車數據 (Bike)</div>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div>
+              <label class="block text-base font-extrabold text-slate-100 mb-2">距離 (km)</label>
+              <input type="number" step="0.1" id="bikeDist" placeholder="例如: 50" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-white font-black text-lg outline-none placeholder:text-slate-400 placeholder:font-normal">
+            </div>
+            <div>
+              <label class="block text-base font-extrabold text-slate-100 mb-2">平均踏頻 (rpm)</label>
+              <input type="number" id="bikeCadence" placeholder="目標: 85-95" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-white font-black text-lg outline-none placeholder:text-slate-400 placeholder:font-normal">
+            </div>
+            <div>
+              <label class="block text-base font-extrabold text-slate-100 mb-2">Zone 2 心率 %</label>
+              <input type="number" id="bikeZ2" placeholder="例如: 85%" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-white font-black text-lg outline-none placeholder:text-slate-400 placeholder:font-normal">
+            </div>
+          </div>
+          <div>
+            <label class="block text-base font-extrabold text-slate-100 mb-2">踩踏與熱量補給筆記</label>
+            <textarea id="bikeNotes" rows="2" placeholder="紀錄踩踏順暢度、能量膠與水分補給時間點..." class="w-full bg-slate-950 border border-slate-700 rounded-xl p-3.5 text-white font-medium text-base outline-none placeholder:text-slate-400 placeholder:font-normal"></textarea>
+          </div>
         </div>
+
+        <!-- Run Panel -->
+        <div id="panelRun" class="sport-panel hidden bg-slate-900/70 border border-orange-500/40 rounded-xl p-5 space-y-4">
+          <div class="text-lg font-black text-orange-300">🏃 跑步數據 (Run)</div>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div>
+              <label class="block text-base font-extrabold text-slate-100 mb-2">距離 (km)</label>
+              <input type="number" step="0.1" id="runDist" placeholder="例如: 8" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-white font-black text-lg outline-none placeholder:text-slate-400 placeholder:font-normal">
+            </div>
+            <div>
+              <label class="block text-base font-extrabold text-slate-100 mb-2">平均步頻 (bpm)</label>
+              <input type="number" id="runCadence" placeholder="目標: 178-180" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-white font-black text-lg outline-none placeholder:text-slate-400 placeholder:font-normal">
+            </div>
+            <div>
+              <label class="block text-base font-extrabold text-slate-100 mb-2">平均心率 (bpm)</label>
+              <input type="number" id="runHR" placeholder="例如: 138" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-white font-black text-lg outline-none placeholder:text-slate-400 placeholder:font-normal">
+            </div>
+          </div>
+          <div>
+            <label class="block text-base font-extrabold text-slate-100 mb-2">姿勢跑法體感覺察 (關鍵姿態 / 重力落下 / 拔腿)</label>
+            <textarea id="runNotes" rows="2" placeholder="紀錄重心落下、拔腿輕盈度與觸地位置覺察..." class="w-full bg-slate-950 border border-slate-700 rounded-xl p-3.5 text-white font-medium text-base outline-none placeholder:text-slate-400 placeholder:font-normal"></textarea>
+          </div>
+        </div>
+
+        <!-- Core Panel -->
+        <div id="panelCore" class="sport-panel hidden bg-slate-900/70 border border-purple-500/40 rounded-xl p-5 space-y-4">
+          <div class="text-lg font-black text-purple-300">🏋️ 核心與肌力 (Core/Strength)</div>
+          <textarea id="coreNotes" rows="2" placeholder="紀錄死蟲式、棒式與神經連結訓練..." class="w-full bg-slate-950 border border-slate-700 rounded-xl p-3.5 text-white font-medium text-base outline-none placeholder:text-slate-400 placeholder:font-normal"></textarea>
+        </div>
+
+        <!-- Rest Panel -->
+        <div id="panelRest" class="sport-panel hidden bg-slate-900/70 border border-slate-500/40 rounded-xl p-5 space-y-4">
+          <div class="text-lg font-black text-slate-300">😴 完全休息與修復 (Rest/Recovery)</div>
+          <textarea id="restNotes" rows="2" placeholder="紀錄滾筒放鬆、靜態伸展與精神修復感..." class="w-full bg-slate-950 border border-slate-700 rounded-xl p-3.5 text-white font-medium text-base outline-none placeholder:text-slate-400 placeholder:font-normal"></textarea>
+        </div>
+      </div>
+
+      <!-- General Notes (ENLARGED) -->
+      <div>
+        <label class="block text-base font-extrabold text-slate-100 mb-2">📝 當日綜合筆記 / 課業心得</label>
+        <textarea id="generalNotes" rows="2" placeholder="紀錄當日整體體能感受與讀書狀態..." class="w-full bg-slate-950 border border-slate-700 rounded-xl p-3.5 text-white font-medium text-base outline-none placeholder:text-slate-400 placeholder:font-normal"></textarea>
+      </div>
+
+      <!-- Modal Footer Controls -->
+      <div class="flex items-center justify-between border-t border-slate-800 pt-5 mt-2">
+        <button id="deleteLogBtn" class="px-4 py-2.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 font-bold text-sm rounded-xl transition-all">
+          <i class="fa-solid fa-trash mr-1.5"></i> 清除當日
+        </button>
+        <div class="flex items-center gap-3">
+          <button id="cancelLogBtn" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-sm rounded-xl transition-all">
+            取消
+          </button>
+          <button id="saveLogBtn" class="px-6 py-2.5 bg-sky-500 hover:bg-sky-400 text-white font-black text-sm rounded-xl shadow-lg shadow-sky-500/20 transition-all flex items-center gap-2">
+            <i class="fa-solid fa-cloud-arrow-up"></i>
+            <span>儲存並同步至雲端</span>
+          </button>
+        </div>
+      </div>
+
     </div>
+  </div>
 
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyB1IOZWLqlVq8LiqpGQEueZvK83qUkxl8Y",
-            authDomain: "triathlon-515.firebaseapp.com",
-            databaseURL: "https://triathlon-515-default-rtdb.firebaseio.com",
-            projectId: "triathlon-515",
-            storageBucket: "triathlon-515.firebasestorage.app",
-            messagingSenderId: "619065567667",
-            appId: "1:619065567667:web:620a10811b9d78ad5dc3c6",
-            measurementId: "G-7XWG5650S7"
-        };
+  <!-- Cross-Device Sync Modal -->
+  <div id="syncModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-200">
+    <div class="bg-[#0f172a] border border-slate-700 rounded-2xl w-full max-w-lg p-6 text-slate-100 space-y-5 shadow-2xl">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <h3 class="font-extrabold text-lg text-white flex items-center gap-2">
+          <i class="fa-solid fa-mobile-screen-button text-indigo-400"></i>
+          📱 跨裝置手機與電腦同步指南
+        </h3>
+        <button id="closeSyncBtn" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
 
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
-        let plans = {}; 
-        let myNotifications = {};
+      <div class="space-y-3 text-xs leading-relaxed text-slate-300">
+        <p class="font-bold text-slate-100 text-sm">
+          為了讓您在「手機」與「電腦」打開同一個訓練日誌：
+        </p>
+        <ol class="list-decimal pl-4 space-y-1.5 font-medium text-slate-300">
+          <li>每個裝置預設擁有一個專屬的 **雲端同步金鑰 (Sync Key)**。</li>
+          <li>只需將下方這組金鑰複製並輸入到手機或另一台電腦，兩邊就會綁定同一個雲端日誌！</li>
+        </ol>
+
+        <div class="bg-slate-950 border border-indigo-500/40 p-3 rounded-xl flex items-center justify-between gap-2 mt-2">
+          <div>
+            <div class="text-[10px] text-slate-400 font-bold">您目前的雲端同步金鑰 (Sync Key)：</div>
+            <div id="currentSyncKeyText" class="text-sm font-mono font-bold text-indigo-300 break-all select-all">
+              讀取中...
+            </div>
+          </div>
+          <button id="copySyncKeyBtn" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs rounded-lg transition-all shrink-0">
+            <i class="fa-solid fa-copy"></i> 複製
+          </button>
+        </div>
+
+        <div class="pt-2 border-t border-slate-800 space-y-2">
+          <label class="block font-bold text-slate-200 text-xs">🔗 連接至另一台裝置的金鑰：</label>
+          <div class="flex gap-2">
+            <input type="text" id="targetSyncKeyInput" placeholder="貼上手機或電腦的金鑰..." class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-white text-xs font-mono outline-none focus:border-indigo-500">
+            <button id="applySyncKeyBtn" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs rounded-lg shrink-0">
+              套用綁定
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Backup & Export Modal -->
+  <div id="backupModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-200">
+    <div class="bg-[#0f172a] border border-slate-700 rounded-2xl w-full max-w-md p-6 text-slate-100 space-y-5">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <h3 class="font-extrabold text-lg text-white">📁 本地與 JSON 檔案備份</h3>
+        <button id="closeBackupBtn" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+      <p class="text-xs text-slate-300 leading-relaxed">
+        雖然所有數據已自動上傳 Firebase 雲端，您也可以額外匯出 JSON 備份檔，或將歷史離線數據一次上傳匯入至雲端。
+      </p>
+      <div class="flex flex-col gap-3">
+        <button id="exportJsonBtn" class="w-full py-2.5 bg-sky-500 hover:bg-sky-400 text-white font-extrabold text-sm rounded-xl transition-all flex items-center justify-center gap-2">
+          <i class="fa-solid fa-download"></i> 下載 JSON 備份檔
+        </button>
+        <button id="importJsonTriggerBtn" class="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-extrabold text-sm rounded-xl transition-all flex items-center justify-center gap-2">
+          <i class="fa-solid fa-upload"></i> 匯入 JSON 檔案上傳雲端
+        </button>
+        <input type="file" id="importFileInput" class="hidden" accept=".json">
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase SDK Imports & Application Logic -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    // Global Environment Variables fallback
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'triathlon-515-log-app';
+    const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
+      apiKey: "demo-key",
+      authDomain: "demo-app.firebaseapp.com",
+      projectId: "demo-app",
+      storageBucket: "demo-app.appspot.com",
+      messagingSenderId: "123456789",
+      appId: "1:123456789:web:123456"
+    };
+
+    const targetRaceDate = new Date('2026-12-06T00:00:00');
+    let viewDate = new Date(2026, 9, 1); // 2026 October
+    let activeDateStr = '';
+    let logsData = {};
+    let activeUserId = null;
+    let unsubscribeFirestore = null;
+
+    // Sample Data Matching October 2026 Schedule
+    const sampleData = {
+      "2026-10-01": { sports: ["run"], runDist: 5, rpe: 3, runNotes: "E區輕鬆跑，姿態穩定" },
+      "2026-10-03": { sports: ["swim"], swimDist: 1200, swimSPL: 19, rpe: 4, swimNotes: "100m主課表維持19划手" },
+      "2026-10-04": { sports: ["run"], runDist: 8, weight: 68.5, rpe: 8, sleep: 7.5, runNotes: "週日長跑 8K，後段稍累，維持180步頻" },
+      "2026-10-06": { sports: ["run"], runDist: 6, rpe: 3, runNotes: "6K輕鬆跑，專注重心落下" },
+      "2026-10-07": { sports: ["core"], rpe: 2, coreNotes: "居家死蟲式與核心穩定" },
+      "2026-10-10": { sports: ["swim"], swimDist: 1400, rpe: 4, swimNotes: "抓水感順暢" },
+      "2026-10-11": { sports: ["bike"], bikeDist: 50, weight: 68.2, rpe: 4, bikeNotes: "50K外騎，Zone 2踏頻90rpm" },
+      "2026-10-13": { sports: ["run"], runDist: 6.5, rpe: 3 },
+      "2026-10-15": { sports: ["rest"], rpe: 1, restNotes: "完全休息，滾筒放鬆" }
+    };
+
+    // DOM Elements
+    const calendarGrid = document.getElementById('calendarGrid');
+    const currentMonthTitle = document.getElementById('currentMonthTitle');
+    const prevMonthBtn = document.getElementById('prevMonthBtn');
+    const nextMonthBtn = document.getElementById('nextMonthBtn');
+    const backToTodayBtn = document.getElementById('backToTodayBtn');
+    const countdownText = document.getElementById('countdownText');
+    const addTodayLogBtn = document.getElementById('addTodayLogBtn');
+    const cloudStatusBadge = document.getElementById('cloudStatusBadge');
+
+    const logModal = document.getElementById('logModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalSubtitle = document.getElementById('modalSubtitle');
+    const modalCloseBtn = document.getElementById('modalCloseBtn');
+    const cancelLogBtn = document.getElementById('cancelLogBtn');
+    const saveLogBtn = document.getElementById('saveLogBtn');
+    const deleteLogBtn = document.getElementById('deleteLogBtn');
+
+    const sundayBanner = document.getElementById('sundayBanner');
+    const fatigueWarning = document.getElementById('fatigueWarning');
+
+    // Sync & Backup Modals
+    const syncModal = document.getElementById('syncModal');
+    const openSyncModalBtn = document.getElementById('openSyncModalBtn');
+    const closeSyncBtn = document.getElementById('closeSyncBtn');
+    const currentSyncKeyText = document.getElementById('currentSyncKeyText');
+    const copySyncKeyBtn = document.getElementById('copySyncKeyBtn');
+    const targetSyncKeyInput = document.getElementById('targetSyncKeyInput');
+    const applySyncKeyBtn = document.getElementById('applySyncKeyBtn');
+
+    const backupModal = document.getElementById('backupModal');
+    const exportImportModalBtn = document.getElementById('exportImportModalBtn');
+    const closeBackupBtn = document.getElementById('closeBackupBtn');
+    const exportJsonBtn = document.getElementById('exportJsonBtn');
+    const importJsonTriggerBtn = document.getElementById('importJsonTriggerBtn');
+    const importFileInput = document.getElementById('importFileInput');
+
+    // Initialize Firebase
+    let app, auth, db;
+    try {
+      app = initializeApp(firebaseConfig);
+      auth = getAuth(app);
+      db = getFirestore(app);
+    } catch (e) {
+      console.warn("Firebase config fallback", e);
+    }
+
+    async function initApp() {
+      updateCountdown();
+      bindEvents();
+      
+      let customSyncKey = localStorage.getItem('triathlon_515_custom_key');
+
+      try {
+        let authUser = null;
+        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+          const res = await signInWithCustomToken(auth, __initial_auth_token);
+          authUser = res.user;
+        } else {
+          const res = await signInAnonymously(auth);
+          authUser = res.user;
+        }
+
+        activeUserId = customSyncKey || authUser.uid;
+        currentSyncKeyText.innerText = activeUserId;
+
+        subscribeToFirestoreLogs(activeUserId);
+
+      } catch (err) {
+        console.error("Cloud Auth Error, falling back to Local Storage", err);
+        cloudStatusBadge.innerHTML = `<i class="fa-solid fa-hard-drive text-[10px]"></i> 本機儲存`;
+        cloudStatusBadge.classList.replace('text-emerald-300', 'text-amber-300');
+        loadLocalLogsFallback();
+      }
+    }
+
+    function subscribeToFirestoreLogs(uid) {
+      if (!db || !auth.currentUser) return;
+
+      if (unsubscribeFirestore) unsubscribeFirestore();
+
+      const logsCollectionRef = collection(db, 'artifacts', appId, 'users', uid, 'logs');
+
+      cloudStatusBadge.innerHTML = `<i class="fa-solid fa-cloud text-[10px] animate-pulse"></i> 雲端同步中`;
+
+      unsubscribeFirestore = onSnapshot(logsCollectionRef, (snapshot) => {
+        const cloudLogs = {};
+        snapshot.forEach((docSnap) => {
+          cloudLogs[docSnap.id] = docSnap.data();
+        });
+
+        if (Object.keys(cloudLogs).length === 0) {
+          const localStored = localStorage.getItem('triathlon_515_logs');
+          let localData = localStored ? JSON.parse(localStored) : sampleData;
+          
+          logsData = localData;
+          Object.keys(localData).forEach(dateKey => {
+            const docRef = doc(db, 'artifacts', appId, 'users', uid, 'logs', dateKey);
+            setDoc(docRef, localData[dateKey], { merge: true });
+          });
+        } else {
+          logsData = cloudLogs;
+        }
+
+        localStorage.setItem('triathlon_515_logs', JSON.stringify(logsData));
+        renderCalendar();
+      }, (error) => {
+        console.error("Firestore Listener Error", error);
+        loadLocalLogsFallback();
+      });
+    }
+
+    function loadLocalLogsFallback() {
+      const stored = localStorage.getItem('triathlon_515_logs');
+      logsData = stored ? JSON.parse(stored) : sampleData;
+      renderCalendar();
+    }
+
+    function updateCountdown() {
+      const now = new Date();
+      const diffDays = Math.ceil((targetRaceDate - now) / (1000 * 60 * 60 * 24));
+      if (diffDays > 0) {
+        countdownText.innerText = `${diffDays} 天`;
+      } else if (diffDays === 0) {
+        countdownText.innerText = `比賽當天！`;
+      } else {
+        countdownText.innerText = `已順暢完賽 🎉`;
+      }
+    }
+
+    function renderCalendar() {
+      const year = viewDate.getFullYear();
+      const month = viewDate.getMonth();
+
+      currentMonthTitle.innerText = `${year}年 ${month + 1}月`;
+      calendarGrid.innerHTML = '';
+
+      const firstDayIdx = new Date(year, month, 1).getDay();
+      const totalDays = new Date(year, month + 1, 0).getDate();
+      const prevMonthDays = new Date(year, month, 0).getDate();
+
+      const todayStr = new Date().toISOString().split('T')[0];
+
+      // Previous Month Days
+      for (let i = firstDayIdx - 1; i >= 0; i--) {
+        const dNum = prevMonthDays - i;
+        const cell = document.createElement('div');
+        cell.className = 'min-h-[80px] sm:min-h-[100px] md:min-h-[140px] bg-[#0c121e]/40 border border-slate-800/60 rounded-lg md:rounded-xl p-1 md:p-2.5 opacity-60 flex flex-col justify-between pointer-events-none';
+        cell.innerHTML = `<span class="text-xs md:text-sm font-extrabold text-slate-500">${dNum}</span>`;
+        calendarGrid.appendChild(cell);
+      }
+
+      // Current Month Days
+      for (let day = 1; day <= totalDays; day++) {
+        const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        const isToday = (dateStr === todayStr);
+
+        const log = logsData[dateStr];
+
+        const card = document.createElement('div');
+        let cardStyle = "min-h-[80px] sm:min-h-[100px] md:min-h-[140px] bg-[#0f172a] hover:bg-[#1e293b] border border-slate-800 hover:border-sky-500/70 rounded-lg md:rounded-xl p-1 sm:p-1.5 md:p-3 cursor-pointer transition-all flex flex-col justify-between group shadow-md overflow-hidden";
         
-        const weeksData = {
-            4: { weekNum: 4, label: "第 4 週 (09/28 - 10/04)", start: "2026-09-28", end: "2026-10-04", dates: ["09/28 一", "09/29 二", "09/30 三", "10/01 四", "10/02 五", "10/03 六", "10/04 日"] },
-            5: { weekNum: 5, label: "第 5 週 (10/05 - 10/11)", start: "2026-10-05", end: "2026-10-11", dates: ["10/05 一", "10/06 二", "10/07 三", "10/08 四", "10/09 五", "10/10 六", "10/11 日"] },
-            6: { weekNum: 6, label: "第 6 週 (10/12 - 10/18)", start: "2026-10-12", end: "2026-10-18", dates: ["10/12 一", "10/13 二", "10/14 三", "10/15 四", "10/16 五", "10/17 六", "10/18 日"] },
-            7: { weekNum: 7, label: "第 7 週 (10/19 - 10/25)", start: "2026-10-19", end: "2026-10-25", dates: ["10/19 一", "10/20 二", "10/21 三", "10/22 四", "10/23 五", "10/24 六", "10/25 日"] },
-            8: { weekNum: 8, label: "第 8 週 (10/26 - 11/01)", start: "2026-10-26", end: "2026-11-01", dates: ["10/26 一", "10/27 二", "10/28 三", "10/29 四", "10/30 五", "10/31 六", "11/01 日"] },
-            9: { weekNum: 9, label: "第 9 週 (11/02 - 11/08)", start: "2026-11-02", end: "2026-11-08", dates: ["11/02 一", "11/03 二", "11/04 三", "11/05 四", "11/06 五", "11/07 六", "11/08 日"] },
-            10: { weekNum: 10, label: "第 10 週 (11/09 - 11/15)", start: "2026-11-09", end: "2026-11-15", dates: ["11/09 一", "11/10 二", "11/11 三", "11/12 四", "11/13 五", "11/14 六", "11/15 日"] },
-            11: { weekNum: 11, label: "第 11 週 (11/16 - 11/22)", start: "2026-11-16", end: "2026-11-22", dates: ["11/16 一", "11/17 二", "11/18 三", "11/19 四", "11/20 五", "11/21 六", "11/22 日"] },
-            12: { weekNum: 12, label: "第 12 週 (11/23 - 11/29)", start: "2026-11-23", end: "2026-11-29", dates: ["11/23 一", "11/24 二", "11/25 三", "11/26 四", "11/27 五", "11/28 六", "11/29 日"] },
-            13: { weekNum: 13, label: "第 13 週 (11/30 - 12/06)", start: "2026-11-30", end: "2026-12-06", dates: ["11/30 一", "12/01 二", "12/02 三", "12/03 四", "12/04 五", "12/05 六", "12/06 日"] }
+        if (isToday) {
+          cardStyle = "min-h-[80px] sm:min-h-[100px] md:min-h-[140px] bg-[#0f172a] border-2 border-sky-400 rounded-lg md:rounded-xl p-1 sm:p-1.5 md:p-3 cursor-pointer transition-all flex flex-col justify-between group shadow-lg shadow-sky-500/10 overflow-hidden";
+        }
+
+        let topHeaderHtml = `<div class="flex items-center justify-between">`;
+        topHeaderHtml += `<span class="text-xs sm:text-sm md:text-lg font-black text-white group-hover:text-sky-300 transition-colors">${day}</span>`;
+        if (isToday) {
+          topHeaderHtml += `<span class="text-[9px] md:text-[10px] font-black bg-sky-500 text-white px-1 md:px-2 py-0.5 rounded">今天</span>`;
+        }
+        topHeaderHtml += `</div>`;
+
+        let bodyHtml = `<div class="flex flex-col gap-0.5 sm:gap-1 my-0.5 sm:my-1.5 overflow-hidden">`;
+        if (log) {
+          if (log.weight) {
+            bodyHtml += `<div class="inline-flex items-center gap-0.5 md:gap-1 text-[10px] md:text-xs font-black px-1 md:px-2 py-0.5 rounded badge-weight w-fit max-w-full truncate"><i class="fa-solid fa-weight-scale text-[9px] hidden sm:inline"></i> ${log.weight}k</div>`;
+          }
+
+          if (log.sports && log.sports.length > 0) {
+            log.sports.forEach(s => {
+              if (s === 'swim') {
+                bodyHtml += `<div class="inline-flex items-center gap-0.5 md:gap-1 text-[10px] md:text-xs font-black px-1 md:px-2 py-0.5 rounded badge-swim w-fit max-w-full truncate"><i class="fa-solid fa-person-swimming text-[9px] hidden sm:inline"></i> ${log.swimDist || '1.2k'}m</div>`;
+              } else if (s === 'bike') {
+                bodyHtml += `<div class="inline-flex items-center gap-0.5 md:gap-1 text-[10px] md:text-xs font-black px-1 md:px-2 py-0.5 rounded badge-bike w-fit max-w-full truncate"><i class="fa-solid fa-person-biking text-[9px] hidden sm:inline"></i> ${log.bikeDist || '40'}k</div>`;
+              } else if (s === 'run') {
+                bodyHtml += `<div class="inline-flex items-center gap-0.5 md:gap-1 text-[10px] md:text-xs font-black px-1 md:px-2 py-0.5 rounded badge-run w-fit max-w-full truncate"><i class="fa-solid fa-person-running text-[9px] hidden sm:inline"></i> ${log.runDist || '5'}k</div>`;
+              } else if (s === 'core') {
+                bodyHtml += `<div class="inline-flex items-center gap-0.5 md:gap-1 text-[10px] md:text-xs font-black px-1 md:px-2 py-0.5 rounded badge-core w-fit max-w-full truncate"><i class="fa-solid fa-dumbbell text-[9px] hidden sm:inline"></i> 核心</div>`;
+              } else if (s === 'rest') {
+                bodyHtml += `<div class="inline-flex items-center gap-0.5 md:gap-1 text-[10px] md:text-xs font-black px-1 md:px-2 py-0.5 rounded badge-rest w-fit max-w-full truncate"><i class="fa-solid fa-bed text-[9px] hidden sm:inline"></i> 休息</div>`;
+              }
+            });
+          }
+        }
+        bodyHtml += `</div>`;
+
+        let bottomHtml = `<div class="overflow-hidden">`;
+        if (log && log.rpe) {
+          bottomHtml += `<span class="text-[9px] md:text-xs font-extrabold text-purple-200 bg-purple-950/80 border border-purple-500/40 px-1 md:px-2 py-0.5 rounded inline-block truncate max-w-full">RPE ${log.rpe}</span>`;
+        }
+        bottomHtml += `</div>`;
+
+        card.className = cardStyle;
+        card.innerHTML = topHeaderHtml + bodyHtml + bottomHtml;
+        card.addEventListener('click', () => openLogModal(dateStr));
+
+        calendarGrid.appendChild(card);
+      }
+
+      // Next Month Trailing Days
+      const totalCells = firstDayIdx + totalDays;
+      const nextDaysCount = (7 - (totalCells % 7)) % 7;
+      for (let i = 1; i <= nextDaysCount; i++) {
+        const cell = document.createElement('div');
+        cell.className = 'min-h-[80px] sm:min-h-[100px] md:min-h-[140px] bg-[#0c121e]/40 border border-slate-800/60 rounded-lg md:rounded-xl p-1 md:p-2.5 opacity-60 flex flex-col justify-between pointer-events-none';
+        cell.innerHTML = `<span class="text-xs md:text-sm font-extrabold text-slate-500">${i}</span>`;
+        calendarGrid.appendChild(cell);
+      }
+    }
+
+    function openLogModal(dateStr) {
+      activeDateStr = dateStr;
+      
+      const [y, m, d] = dateStr.split('-').map(Number);
+      const dateObj = new Date(y, m - 1, d);
+      const isSunday = (dateObj.getDay() === 0);
+      const dayNames = ['週日', '週一', '週二', '週三', '週四', '週五', '週六'];
+
+      modalTitle.innerText = `編輯訓練日誌 - ${dateStr}`;
+      modalSubtitle.innerText = `(${dayNames[dateObj.getDay()]}) • 徐國峰科學化數據登記`;
+
+      if (isSunday) {
+        sundayBanner.classList.remove('hidden');
+      } else {
+        sundayBanner.classList.add('hidden');
+      }
+
+      const log = logsData[dateStr] || {};
+
+      document.getElementById('inputWeight').value = log.weight || '';
+      document.getElementById('inputSleep').value = log.sleep || '';
+      document.getElementById('inputRPE').value = log.rpe || '';
+      document.getElementById('inputStress').value = log.stress || '';
+      document.getElementById('generalNotes').value = log.generalNotes || '';
+
+      document.getElementById('swimDist').value = log.swimDist || '';
+      document.getElementById('swimSPL').value = log.swimSPL || '';
+      document.getElementById('swimNotes').value = log.swimNotes || '';
+
+      document.getElementById('bikeDist').value = log.bikeDist || '';
+      document.getElementById('bikeCadence').value = log.bikeCadence || '';
+      document.getElementById('bikeZ2').value = log.bikeZ2 || '';
+      document.getElementById('bikeNotes').value = log.bikeNotes || '';
+
+      document.getElementById('runDist').value = log.runDist || '';
+      document.getElementById('runCadence').value = log.runCadence || '';
+      document.getElementById('runHR').value = log.runHR || '';
+      document.getElementById('runNotes').value = log.runNotes || '';
+
+      document.getElementById('coreNotes').value = log.coreNotes || '';
+      document.getElementById('restNotes').value = log.restNotes || '';
+
+      document.querySelectorAll('.sport-select-btn').forEach(btn => {
+        const sport = btn.dataset.sport;
+        if (log.sports && log.sports.includes(sport)) {
+          btn.classList.add('active', 'border-sky-500', 'bg-sky-500/20', 'text-sky-300');
+        } else {
+          btn.classList.remove('active', 'border-sky-500', 'bg-sky-500/20', 'text-sky-300');
+        }
+      });
+
+      updateSportPanels();
+      checkFatigueWarning();
+
+      logModal.classList.remove('opacity-0', 'pointer-events-none');
+    }
+
+    function closeLogModal() {
+      logModal.classList.add('opacity-0', 'pointer-events-none');
+    }
+
+    function updateSportPanels() {
+      const activeSports = Array.from(document.querySelectorAll('.sport-select-btn.active')).map(b => b.dataset.sport);
+
+      document.getElementById('panelSwim').classList.toggle('hidden', !activeSports.includes('swim'));
+      document.getElementById('panelBike').classList.toggle('hidden', !activeSports.includes('bike'));
+      document.getElementById('panelRun').classList.toggle('hidden', !activeSports.includes('run'));
+      document.getElementById('panelCore').classList.toggle('hidden', !activeSports.includes('core'));
+      document.getElementById('panelRest').classList.toggle('hidden', !activeSports.includes('rest'));
+    }
+
+    function checkFatigueWarning() {
+      const stress = Number(document.getElementById('inputStress').value) || 0;
+      const sleep = Number(document.getElementById('inputSleep').value) || 24;
+
+      if (stress >= 4 && sleep < 6.5) {
+        fatigueWarning.classList.remove('hidden');
+      } else {
+        fatigueWarning.classList.add('hidden');
+      }
+    }
+
+    async function saveActiveLog() {
+      const activeSports = Array.from(document.querySelectorAll('.sport-select-btn.active')).map(b => b.dataset.sport);
+
+      const log = {
+        sports: activeSports,
+        weight: document.getElementById('inputWeight').value,
+        sleep: document.getElementById('inputSleep').value,
+        rpe: document.getElementById('inputRPE').value,
+        stress: document.getElementById('inputStress').value,
+        generalNotes: document.getElementById('generalNotes').value,
+
+        swimDist: document.getElementById('swimDist').value,
+        swimSPL: document.getElementById('swimSPL').value,
+        swimNotes: document.getElementById('swimNotes').value,
+
+        bikeDist: document.getElementById('bikeDist').value,
+        bikeCadence: document.getElementById('bikeCadence').value,
+        bikeZ2: document.getElementById('bikeZ2').value,
+        bikeNotes: document.getElementById('bikeNotes').value,
+
+        runDist: document.getElementById('runDist').value,
+        runCadence: document.getElementById('runCadence').value,
+        runHR: document.getElementById('runHR').value,
+        runNotes: document.getElementById('runNotes').value,
+
+        coreNotes: document.getElementById('coreNotes').value,
+        restNotes: document.getElementById('restNotes').value,
+        updatedAt: new Date().toISOString()
+      };
+
+      logsData[activeDateStr] = log;
+      localStorage.setItem('triathlon_515_logs', JSON.stringify(logsData));
+
+      if (db && auth.currentUser && activeUserId) {
+        try {
+          const docRef = doc(db, 'artifacts', appId, 'users', activeUserId, 'logs', activeDateStr);
+          await setDoc(docRef, log, { merge: true });
+        } catch (e) {
+          console.error("Cloud Save Error", e);
+        }
+      }
+
+      renderCalendar();
+      closeLogModal();
+    }
+
+    async function deleteActiveLog() {
+      delete logsData[activeDateStr];
+      localStorage.setItem('triathlon_515_logs', JSON.stringify(logsData));
+
+      if (db && auth.currentUser && activeUserId) {
+        try {
+          const docRef = doc(db, 'artifacts', appId, 'users', activeUserId, 'logs', activeDateStr);
+          await deleteDoc(docRef);
+        } catch (e) {
+          console.error("Cloud Delete Error", e);
+        }
+      }
+
+      renderCalendar();
+      closeLogModal();
+    }
+
+    function bindEvents() {
+      prevMonthBtn.addEventListener('click', () => {
+        viewDate.setMonth(viewDate.getMonth() - 1);
+        renderCalendar();
+      });
+
+      nextMonthBtn.addEventListener('click', () => {
+        viewDate.setMonth(viewDate.getMonth() + 1);
+        renderCalendar();
+      });
+
+      backToTodayBtn.addEventListener('click', () => {
+        viewDate = new Date(2026, 9, 1);
+        renderCalendar();
+      });
+
+      addTodayLogBtn.addEventListener('click', () => {
+        const todayStr = new Date().toISOString().split('T')[0];
+        openLogModal(todayStr);
+      });
+
+      modalCloseBtn.addEventListener('click', closeLogModal);
+      cancelLogBtn.addEventListener('click', closeLogModal);
+      saveLogBtn.addEventListener('click', saveActiveLog);
+      deleteLogBtn.addEventListener('click', deleteActiveLog);
+
+      document.querySelectorAll('.sport-select-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          btn.classList.toggle('active');
+          btn.classList.toggle('border-sky-500');
+          btn.classList.toggle('bg-sky-500/20');
+          btn.classList.toggle('text-sky-300');
+          updateSportPanels();
+        });
+      });
+
+      document.getElementById('inputStress').addEventListener('input', checkFatigueWarning);
+      document.getElementById('inputSleep').addEventListener('input', checkFatigueWarning);
+
+      // Sync Modal Controls
+      openSyncModalBtn.addEventListener('click', () => {
+        syncModal.classList.remove('opacity-0', 'pointer-events-none');
+      });
+
+      closeSyncBtn.addEventListener('click', () => {
+        syncModal.classList.add('opacity-0', 'pointer-events-none');
+      });
+
+      copySyncKeyBtn.addEventListener('click', () => {
+        const textToCopy = currentSyncKeyText.innerText;
+        const tempInput = document.createElement('textarea');
+        tempInput.value = textToCopy;
+        document.body.appendChild(tempInput);
+        tempInput.select();
+        document.execCommand('copy');
+        document.body.removeChild(tempInput);
+
+        copySyncKeyBtn.innerHTML = `<i class="fa-solid fa-check"></i> 已複製`;
+        setTimeout(() => {
+          copySyncKeyBtn.innerHTML = `<i class="fa-solid fa-copy"></i> 複製`;
+        }, 2000);
+      });
+
+      applySyncKeyBtn.addEventListener('click', () => {
+        const key = targetSyncKeyInput.value.trim();
+        if (key) {
+          localStorage.setItem('triathlon_515_custom_key', key);
+          activeUserId = key;
+          currentSyncKeyText.innerText = key;
+          subscribeToFirestoreLogs(key);
+          syncModal.classList.add('opacity-0', 'pointer-events-none');
+        }
+      });
+
+      // Backup Modal Controls
+      exportImportModalBtn.addEventListener('click', () => {
+        backupModal.classList.remove('opacity-0', 'pointer-events-none');
+      });
+
+      closeBackupBtn.addEventListener('click', () => {
+        backupModal.classList.add('opacity-0', 'pointer-events-none');
+      });
+
+      exportJsonBtn.addEventListener('click', () => {
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(logsData, null, 2));
+        const downloadAnchor = document.createElement('a');
+        downloadAnchor.setAttribute("href", dataStr);
+        downloadAnchor.setAttribute("download", `515_triathlon_cloud_logs_${new Date().toISOString().split('T')[0]}.json`);
+        document.body.appendChild(downloadAnchor);
+        downloadAnchor.click();
+        downloadAnchor.remove();
+      });
+
+      importJsonTriggerBtn.addEventListener('click', () => {
+        importFileInput.click();
+      });
+
+      importFileInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = async function(event) {
+          try {
+            const imported = JSON.parse(event.target.result);
+            logsData = imported;
+            localStorage.setItem('triathlon_515_logs', JSON.stringify(logsData));
+
+            if (db && auth.currentUser && activeUserId) {
+              const uploadPromises = Object.keys(imported).map(dateKey => {
+                const docRef = doc(db, 'artifacts', appId, 'users', activeUserId, 'logs', dateKey);
+                return setDoc(docRef, imported[dateKey], { merge: true });
+              });
+              await Promise.all(uploadPromises);
+            }
+
+            renderCalendar();
+            backupModal.classList.add('opacity-0', 'pointer-events-none');
+          } catch (err) {
+            console.error("Import error", err);
+          }
         };
+        reader.readAsText(file);
+      });
+    }
 
-        // 依據 115-1-M4 官方行事曆精準核對之全課表資料庫
-        const courses = { 
-            4: [[1, 8, 8, "教師節放假", "holiday"], [2, 8, 9, "模組 4A 區段考試", "exam"], [2, 10, 11, "社區醫學", "course"], [3, 13, 14, "新陳代謝", "course"], [3, 15, 16, "呼吸學", "course"], [4, 8, 9, "影像診斷學", "course"], [4, 10, 10, "PBL", "course"], [4, 13, 13, "臨床診斷學", "course"], [4, 14, 15, "臨床技能", "course"], [4, 16, 16, "新陳代謝", "course"], [5, 10, 11, "環境與職業醫學", "course"], [5, 13, 14, "新陳代謝", "course"], [5, 15, 15, "臨床技能", "course"], [5, 16, 16, "新陳代謝", "course"]], 
-            5: [[1, 8, 9, "PBL", "course"], [1, 10, 11, "呼吸學", "course"], [1, 13, 15, "人類遺傳學", "course"], [2, 10, 11, "呼吸學", "course"], [2, 13, 14, "呼吸學", "course"], [2, 15, 16, "口腔醫學概論", "course"], [3, 8, 10, "新陳代謝", "course"], [3, 11, 11, "社區醫學", "course"], [3, 13, 14, "呼吸學", "course"], [5, 8, 8, "國慶日調整放假", "holiday"]], 
-            6: [[1, 8, 9, "PBL", "course"], [2, 10, 11, "臨床診斷學", "course"], [3, 8, 9, "新陳代謝", "course"], [3, 10, 10, "口腔醫學概論", "course"], [3, 13, 14, "急診醫學", "course"], [4, 8, 9, "呼吸學", "course"], [4, 10, 11, "口腔醫學概論 期中考試", "exam"], [4, 13, 15, "臨床技能", "course"], [5, 8, 9, "呼吸學", "course"], [5, 10, 11, "臨床技能", "course"], [5, 13, 15, "臨床技能", "course"]], 
-            7: [[1, 8, 9, "PBL", "course"], [1, 10, 11, "新陳代謝", "course"], [1, 13, 16, "呼吸學", "course"], [2, 13, 16, "新陳代謝", "course"], [3, 8, 9, "新陳代謝", "course"], [3, 10, 11, "呼吸學", "course"], [3, 13, 14, "新陳代謝", "course"], [4, 8, 11, "呼吸學", "course"], [4, 13, 14, "預防醫學", "course"], [4, 15, 16, "新陳代謝", "course"], [5, 8, 9, "外科學概論", "course"], [5, 10, 10, "PBL", "course"], [5, 11, 11, "核子醫學", "course"], [5, 13, 14, "新陳代謝", "course"], [5, 15, 16, "預防醫學", "course"]], 
-            8: [[1, 8, 8, "臺灣光復節調整放假", "holiday"], [2, 15, 16, "外科學概論", "course"], [3, 8, 9, "新陳代謝", "course"], [3, 10, 11, "口腔醫學概論", "course"], [4, 8, 9, "呼吸學", "course"], [4, 10, 11, "PBL", "course"], [4, 13, 14, "呼吸學", "course"], [4, 15, 16, "外科學概論", "course"], [5, 10, 11, "PBL", "course"], [5, 15, 16, "新陳代謝", "course"]], 
-            9: [[1, 8, 8, "模組 4B 區段考試", "exam"], [2, 10, 11, "臨床營養學", "course"], [2, 13, 15, "人類遺傳學", "course"], [3, 10, 11, "消化學", "course"], [3, 13, 14, "臨床營養學", "course"], [3, 15, 16, "實驗診斷學", "course"], [4, 8, 9, "臨床診斷學", "course"], [5, 8, 9, "消化學", "course"], [5, 10, 10, "PBL", "course"], [5, 11, 11, "核子醫學", "course"], [5, 13, 14, "消化學", "course"], [5, 15, 16, "實驗診斷學", "course"]], 
-            10: [[1, 8, 9, "PBL", "course"], [1, 10, 11, "消化學", "course"], [1, 13, 14, "消化學", "course"], [2, 13, 14, "消化學", "course"], [2, 15, 16, "外科學概論", "course"], [3, 10, 11, "消化學", "course"], [3, 13, 15, "社區醫學", "course"], [4, 8, 11, "口腔醫學概論", "course"], [4, 13, 13, "社區醫學", "course"], [5, 8, 9, "消化學", "course"], [5, 10, 10, "PBL", "course"], [5, 11, 11, "環境與職業醫學", "course"], [5, 13, 13, "預防醫學", "course"], [5, 14, 16, "臨床技能", "course"]], 
-            11: [[1, 10, 11, "臨床營養學", "course"], [2, 8, 9, "外科學概論", "course"], [2, 10, 11, "臨床營養學", "course"], [2, 13, 14, "外科學概論", "course"], [2, 15, 16, "消化學", "course"], [3, 8, 9, "外科學概論", "course"], [3, 10, 11, "急診醫學", "course"], [3, 13, 16, "預防醫學 / 消化學", "course"], [4, 8, 9, "消化學", "course"], [4, 10, 11, "口腔醫學概論", "course"], [4, 13, 14, "臨床診斷學", "course"], [4, 15, 15, "臨床技能", "course"], [5, 8, 9, "消化學", "course"], [5, 10, 11, "PBL", "course"], [5, 13, 17, "臨床技能 / 綜合課程", "course"]], 
-            12: [[1, 10, 11, "臨床營養學", "course"], [2, 10, 11, "臨床營養學", "course"], [3, 10, 11, "臨床營養學", "course"], [4, 8, 9, "模組 4C 區段考試", "exam"], [5, 8, 9, "影像診斷學", "course"], [5, 10, 10, "PBL", "course"], [5, 11, 11, "預防醫學", "course"], [5, 13, 13, "環境與職業醫學", "course"], [5, 14, 14, "核子醫學", "course"], [5, 15, 16, "神經學", "course"]], 
-            13: [[1, 8, 11, "精神科學", "course"], [1, 13, 16, "精神科學", "course"], [2, 8, 9, "臨床診斷學", "course"], [2, 10, 11, "精神科學", "course"], [2, 13, 14, "急診醫學", "course"], [2, 15, 16, "神經學", "course"], [3, 8, 9, "精神科學", "course"], [3, 10, 11, "神經學", "course"], [3, 13, 14, "神經學", "course"], [3, 15, 16, "精神科學", "course"], [4, 8, 8, "神經學", "course"], [4, 9, 10, "復健醫學", "course"], [4, 11, 11, "環境與職業醫學", "course"], [4, 13, 14, "神經學", "course"], [4, 15, 15, "預防醫學", "course"], [5, 8, 9, "神經學", "course"], [5, 10, 11, "PBL", "course"], [5, 13, 14, "神經學", "course"]] 
-        };
-
-        let currentWeek = 4;
-        let activeZoomDay = null; // 手機版放大的日期 (1~7)
-        let currentUser = localStorage.getItem('triathlon_user') || "";
-        
-        if (!currentUser) {
-            currentUser = prompt("歡迎來到訓練協調表！請輸入您的名字 (例如：小明)：") || "使用者";
-            localStorage.setItem('triathlon_user', currentUser);
-        }
-        document.getElementById('display-user').innerText = currentUser;
-
-        // 自動比對今天日期並定位（週日會自動翻到下一個星期）
-        function autoDetectCurrentWeekAndDay() {
-            const today = new Date();
-            let checkDate = new Date(today);
-            let dayOfWeek = today.getDay(); // 0 是星期日, 1~6 是星期一至星期六
-
-            if (dayOfWeek === 0) {
-                checkDate.setDate(today.getDate() + 1); // 加上 1 天，切換至下週一
-                activeZoomDay = 1;
-            } else {
-                activeZoomDay = dayOfWeek;
-            }
-
-            const yyyy = checkDate.getFullYear();
-            const mm = String(checkDate.getMonth() + 1).padStart(2, '0');
-            const dd = String(checkDate.getDate()).padStart(2, '0');
-            const targetDateStr = `${yyyy}-${mm}-${dd}`;
-            
-            for (let w in weeksData) {
-                if (targetDateStr >= weeksData[w].start && targetDateStr <= weeksData[w].end) {
-                    currentWeek = parseInt(w);
-                    break;
-                }
-            }
-        }
-
-        function init() {
-            autoDetectCurrentWeekAndDay();
-
-            db.ref('triathlon_plans').on('value', (snap) => {
-                plans = snap.val() || {};
-                renderTable(); 
-                updateStats();
-            });
-
-            db.ref('notifications/' + currentUser).on('value', (snap) => {
-                myNotifications = snap.val() || {};
-                updateNotificationUI();
-            });
-            
-            db.ref('notifications/' + currentUser).on('child_added', (snap) => {
-                const noti = snap.val();
-                if (noti.read === false && Date.now() - noti.timestamp < 5000) {
-                    showToast("🔔 " + noti.message);
-                }
-            });
-        }
-
-        function zoomDay(dayNum) {
-            if (window.innerWidth >= 768) return; 
-            activeZoomDay = dayNum;
-            document.body.classList.add('mobile-zoom-mode');
-            renderTable();
-        }
-
-        function resetMobileView() {
-            activeZoomDay = null;
-            document.body.classList.remove('mobile-zoom-mode');
-            renderTable();
-        }
-
-        function changeWeek(delta) {
-            let newWeek = currentWeek + delta;
-            if (newWeek >= 4 && newWeek <= 13) {
-                currentWeek = newWeek;
-                renderTable();
-                updateStats();
-            }
-        }
-
-        function renderTable() {
-            const weekInfo = weeksData[currentWeek];
-            document.getElementById('desktop-week-title').innerText = weekInfo.label;
-
-            for (let d = 1; d <= 7; d++) {
-                const th = document.getElementById(`th-${d}`);
-                th.innerText = weekInfo.dates[d - 1];
-                
-                if (d === activeZoomDay) {
-                    th.classList.add('active-day');
-                } else {
-                    th.classList.remove('active-day');
-                }
-            }
-
-            const tbody = document.getElementById('table-body');
-            tbody.innerHTML = '';
-            
-            const weekCourses = {};
-            if (courses[currentWeek]) {
-                courses[currentWeek].forEach(c => {
-                    for (let t = c[1]; t <= c[2]; t++) {
-                        weekCourses[`${c[0]}_${t}`] = { name: c[3], type: c[4] || "course" };
-                    }
-                });
-            }
-
-            for (let time = 8; time <= 19; time++) {
-                const tr = document.createElement('tr');
-                const th = document.createElement('td');
-                th.className = 'time-col';
-                th.innerHTML = time === 12 ? "12:00<br>午休" : `${time.toString().padStart(2, '0')}:00<br>~<br>${(time+1).toString().padStart(2, '0')}:00`;
-                tr.appendChild(th);
-
-                for (let day = 1; day <= 7; day++) {
-                    const td = document.createElement('td');
-                    td.className = `interactive day-col ${day === activeZoomDay ? 'active-day' : ''}`;
-                    const key = `${currentWeek}_${day}_${time}`;
-                    
-                    if (day <= 5 && weekCourses[`${day}_${time}`]) {
-                        const course = weekCourses[`${day}_${time}`];
-                        let div = document.createElement('div');
-                        div.innerText = course.name;
-                        div.className = course.type === 'holiday' ? 'course-block holiday-block' : (course.type === 'exam' ? 'course-block exam-block' : 'course-block');
-                        td.appendChild(div);
-                    }
-
-                    if (plans[key]) {
-                        const plan = plans[key];
-                        const duration = plan.duration || 1; 
-                        let div = document.createElement('div');
-                        let typeIcon = plan.type === 'swim' ? '🏊' : (plan.type === 'bike' ? '🚴' : '🏃');
-                        let typeName = plan.type === 'swim' ? '游泳' : (plan.type === 'bike' ? '騎車' : '跑步');
-                        let statusText = plan.status === 'confirmed' ? '(已確認)' : `(待確認: ${plan.proposedBy})`;
-                        
-                        div.className = `training-plan ${plan.type} status-${plan.status}`;
-                        div.style.height = `calc(${duration * 100}% + ${Math.floor(duration - 1)}px - 4px)`;
-                        div.innerHTML = `<span>${typeIcon} ${typeName} (${duration}h)</span><span style="font-size:0.65rem; margin-top:2px; font-weight:normal;">${statusText}</span>`;
-                        td.appendChild(div);
-                    }
-
-                    td.onclick = () => handleCellClick(day, time, plans[key]);
-                    tr.appendChild(td);
-                }
-                tbody.appendChild(tr);
-            }
-        }
-
-        function updateStats() {
-            let sCount = 0, bCount = 0, rCount = 0;
-            let sHour = 0, bHour = 0, rHour = 0;
-            for (let key in plans) {
-                if (key.startsWith(`${currentWeek}_`)) {
-                    let dur = plans[key].duration || 1;
-                    if (plans[key].type === 'swim') { sCount++; sHour += dur; }
-                    if (plans[key].type === 'bike') { bCount++; bHour += dur; }
-                    if (plans[key].type === 'run') { rCount++; rHour += dur; }
-                }
-            }
-            document.getElementById('stat-swim').innerText = `🏊 游泳: ${sCount}次 (${sHour}h)`;
-            document.getElementById('stat-bike').innerText = `🚴 騎車: ${bCount}次 (${bHour}h)`;
-            document.getElementById('stat-run').innerText = `🏃 跑步: ${rCount}次 (${rHour}h)`;
-        }
-
-        let currentTargetKey = null;
-
-        function handleCellClick(day, time, existingPlan) {
-            const weekInfo = weeksData[currentWeek];
-            currentTargetKey = `${currentWeek}_${day}_${time}`;
-            const timeStr = `${time.toString().padStart(2, '0')}:00`;
-            const modal = document.getElementById('action-modal');
-            const btns = document.getElementById('modal-actions');
-            const desc = document.getElementById('modal-desc');
-            
-            if (!existingPlan) {
-                document.getElementById('modal-title').innerText = `安排訓練 (${weekInfo.dates[day-1]} ${timeStr})`;
-                desc.innerText = "請選擇項目：";
-                document.getElementById('duration-container').style.display = 'block'; 
-                btns.innerHTML = `<button class="btn btn-swim" onclick="savePlan('swim', 'proposed')">🏊 安排游泳</button><button class="btn btn-bike" onclick="savePlan('bike', 'proposed')">🚴 安排騎車</button><button class="btn btn-run" onclick="savePlan('run', 'proposed')">🏃 安排跑步</button><button class="btn btn-cancel" onclick="closeModal('action-modal')">取消</button>`;
-            } else {
-                document.getElementById('duration-container').style.display = 'none';
-                let dur = existingPlan.duration || 1;
-                document.getElementById('modal-title').innerText = `訓練協商 (${timeStr})`;
-                
-                if (existingPlan.status === 'confirmed') {
-                    desc.innerText = `已確認的訓練 (共 ${dur} 小時)。`;
-                    btns.innerHTML = `<button class="btn btn-cancel" onclick="deletePlan('${existingPlan.proposedBy}', 'cancel_confirmed')">取消此訓練</button><button class="btn btn-cancel" style="background:#e5e7eb; color:#333;" onclick="closeModal('action-modal')">關閉</button>`;
-                } else if (existingPlan.proposedBy === currentUser) {
-                    desc.innerText = `等待對方同意中...`;
-                    btns.innerHTML = `<button class="btn btn-cancel" onclick="deletePlan('${existingPlan.proposedBy}', 'withdraw')">撤回提議</button><button class="btn btn-cancel" style="background:#e5e7eb; color:#333;" onclick="closeModal('action-modal')">關閉</button>`;
-                } else {
-                    desc.innerText = `${existingPlan.proposedBy} 提議在這裡訓練 ${dur} 小時。\n你同意嗎？`;
-                    btns.innerHTML = `<button class="btn btn-agree" onclick="savePlan('${existingPlan.type}', 'confirmed', '${existingPlan.proposedBy}')">✅ 同意</button><button class="btn btn-disagree" onclick="deletePlan('${existingPlan.proposedBy}', 'reject')">❌ 不同意 (退回重選)</button><button class="btn btn-cancel" onclick="closeModal('action-modal')">關閉</button>`;
-                }
-            }
-            modal.style.display = 'flex';
-        }
-
-        function savePlan(type, status, originalProposer = null) {
-            let dur = status === 'proposed' ? parseFloat(document.getElementById('plan-duration').value) : plans[currentTargetKey].duration;
-            const typeName = type === 'swim' ? '游泳' : (type === 'bike' ? '騎車' : '跑步');
-            
-            db.ref('triathlon_plans/' + currentTargetKey).set({ type: type, proposedBy: status === 'proposed' ? currentUser : originalProposer, status: status, duration: dur });
-            
-            if (status === 'confirmed' && originalProposer) {
-                sendNotification(originalProposer, `${currentUser} ✅ 同意了你第 ${currentWeek} 週的 ${typeName} 提議！`);
-            }
-            closeModal('action-modal');
-        }
-
-        function deletePlan(targetUser, actionType) {
-            const plan = plans[currentTargetKey];
-            const typeName = plan.type === 'swim' ? '游泳' : (plan.type === 'bike' ? '騎車' : '跑步');
-
-            if (actionType === 'reject') {
-                sendNotification(targetUser, `${currentUser} ❌ 拒絕了你第 ${currentWeek} 週的 ${typeName} 提議。`);
-                alert("已拒絕。請在畫面上點擊新時段重新發起提議！");
-            } else if (actionType === 'cancel_confirmed' && confirm('確定要取消這個已經排好的訓練嗎？')) {
-                sendNotification(targetUser, `${currentUser} 取消了你們原本確認好的 ${typeName} 訓練。`);
-            } else if (actionType === 'withdraw' && !confirm('確定要撤回提議嗎？')) {
-                return;
-            }
-
-            db.ref('triathlon_plans/' + currentTargetKey).remove();
-            closeModal('action-modal');
-        }
-
-        function sendNotification(targetUser, message) {
-            if (targetUser === currentUser || !targetUser) return; 
-            db.ref('notifications/' + targetUser).push({ message: message, timestamp: Date.now(), read: false });
-        }
-
-        function showToast(message) {
-            const container = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-            toast.className = 'toast';
-            toast.innerText = message;
-            container.appendChild(toast);
-            setTimeout(() => { toast.remove(); }, 4000); 
-        }
-
-        function updateNotificationUI() {
-            let unreadCount = 0;
-            const notiList = document.getElementById('noti-list');
-            notiList.innerHTML = '';
-            const notiArray = Object.keys(myNotifications).map(k => ({id: k, ...myNotifications[k]}));
-            notiArray.sort((a, b) => b.timestamp - a.timestamp);
-
-            if (notiArray.length === 0) {
-                notiList.innerHTML = '<p style="color: #9ca3af;">目前沒有任何通知</p>';
-            }
-
-            notiArray.forEach(noti => {
-                if (!noti.read) unreadCount++;
-                let dateStr = new Date(noti.timestamp).toLocaleString('zh-TW', {month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit'});
-                notiList.innerHTML += `<div class="notification-item ${noti.read ? '' : 'unread'}"><div>${noti.message}</div><div class="notification-time">${dateStr}</div></div>`;
-            });
-
-            const badge = document.getElementById('noti-badge');
-            if (unreadCount > 0) {
-                badge.innerText = unreadCount > 9 ? '9+' : unreadCount;
-                badge.style.display = 'inline-block';
-            } else {
-                badge.style.display = 'none';
-            }
-        }
-
-        function openNotifications() { document.getElementById('noti-modal').style.display = 'flex'; }
-        function closeNotifications() {
-            document.getElementById('noti-modal').style.display = 'none';
-            for (let key in myNotifications) {
-                if (!myNotifications[key].read) db.ref(`notifications/${currentUser}/${key}`).update({ read: true });
-            }
-        }
-        function switchUser() {
-            let newUser = prompt("請輸入您的名字：", currentUser);
-            if (newUser) { currentUser = newUser; localStorage.setItem('triathlon_user', currentUser); window.location.reload(); }
-        }
-        function closeModal(modalId) { document.getElementById(modalId).style.display = 'none'; }
-
-        init();
-    </script>
+    window.onload = function() {
+      initApp();
+    };
+  </script>
 </body>
 </html>
